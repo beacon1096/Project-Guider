@@ -218,7 +218,7 @@ MainWindow::MainWindow(QWidget *parent) :
     actionDebugStepInto = new QAction(tr("Step Into"),this);
     actionDebugStepInto->setShortcut(tr("F11"));
     actionDebugStepInto->setIcon(QIcon(QString(":/Resources/Icons/Actions/%1/debug-step-into.svg").arg(th)));
-    actionDebugStepInto->setEnabled(false);
+    //actionDebugStepInto->setEnabled(false);
     menuDebug->addAction(actionDebugStepInto);
     actionDebugStepOut = new QAction(tr("Step Out"),this);
     actionDebugStepOut->setShortcut(tr("Shift+F11"));

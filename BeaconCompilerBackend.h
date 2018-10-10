@@ -25,8 +25,8 @@ class BeaconCompilerBackend : public QObject
 public:
     explicit BeaconCompilerBackend(QObject *parent = nullptr);
     BeaconExternalProgram gpp,gcc;
-    bool compilerValidation();
-    bool configureCompilerPath();
+    int compilerValidation();
+    bool configureCompilerPath(int lastError);
     bool compile();
     QProcess::ExitStatus lastCompileStatus;
     int lastCompileResult;
@@ -40,7 +40,7 @@ public slots:
 class BeaconCompilerSetupInterface : public QDialog{
     Q_OBJECT
 public:
-    explicit BeaconCompilerSetupInterface(QObject *parent = nullptr);
+    explicit BeaconCompilerSetupInterface(int errorCode,QObject *parent = nullptr);
     QLabel *information;
     QLabel *gcc,*gpp;
     QLineEdit *gccL,*gppL;
