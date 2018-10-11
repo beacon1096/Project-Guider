@@ -73,6 +73,7 @@ void BeaconCompilerBackend::compileStart(QString filePath,QString executable){
         arg.append(filePath);
         arg.append("-o");
         arg.append(executable);
+        arg.append("-Wall");
         gcc.clearLog();
         gcc.setArguments(arg);
         qDebug() << "executing gcc " << arg;
@@ -88,6 +89,7 @@ void BeaconCompilerBackend::compileStart(QString filePath,QString executable){
         arg.append(filePath);
         arg.append("-o");
         arg.append(executable);
+        arg.append("-Wall");
         gpp.clearLog();
         gpp.setArguments(arg);
         qDebug() << "executing g++ " << arg;

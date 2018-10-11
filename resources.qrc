@@ -51,5 +51,7 @@
         <file>Resources/Code/test.c</file>
         <file>Resources/Code/test.cpp</file>
         <file>Resources/Program/runner.exe</file>
+        <file>Resources/Qsci/Apis/c.api</file>
+        <file>Resources/Qsci/Apis/cpp.api</file>
     </qresource>
 </RCC>
