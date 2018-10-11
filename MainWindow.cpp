@@ -13,11 +13,50 @@ MainWindow::MainWindow(QWidget *parent) :
 //default editor
     editor = new QsciScintilla(this);
     currentEditor = editor;
+    //Lexer
     textLexer = new QsciLexerCPP(this);
     editor->setLexer(textLexer);
+    //Margin Line Number
     editor->setMarginType(0,QsciScintilla::NumberMargin);
     editor->setMarginLineNumbers(0,true);
-    editor->setMarginWidth(0,35);
+    editor->setMarginWidth(0,40);
+    //Margin Breakpoint
+    editor->setMarginType(1,QsciScintilla::SymbolMargin);
+    editor->setMarginWidth(1,10);
+    editor->setMarginSensitivity(1,true);
+    editor->setMarginMarkerMask(1, 0x02);
+    editor->markerDefine(QsciScintilla::Circle, 1);
+    editor->setMarkerBackgroundColor(QColor("#ee1111"), 1);
+    //Margin Step in
+    editor->setMarginType(2, QsciScintilla::SymbolMargin);
+    editor->setMarginLineNumbers(2, false);
+    editor->setMarginWidth(2, 10);
+    editor->setMarginSensitivity(2, false);
+    editor->setMarginMarkerMask(2, 0x04);
+    editor->markerDefine(QsciScintilla::RightArrow, 2);
+    editor->setMarkerBackgroundColor(QColor("#eaf593"), 2);
+    //Margin Folder
+    editor->setMarginType(3, QsciScintilla::SymbolMargin);
+    editor->setMarginLineNumbers(3, false);
+    editor->setMarginWidth(3, 10);
+    editor->setMarginSensitivity(3, true);
+    //Auto Completion-API
+    apis = new QsciAPIs(textLexer);
+    apis->load(":/Resources/Qsci/Apis/cpp.api");
+    apis->prepare();
+    editor->setAutoCompletionSource(QsciScintilla::AcsAll);
+    editor->setAutoCompletionCaseSensitivity(true);
+    editor->setAutoCompletionThreshold(2);
+    //others
+    editor->setUnmatchedBraceForegroundColor(Qt::blue);
+    editor->setIndentationGuides(true);
+    editor->setMarginsBackgroundColor(Qt::lightGray);
+    editor->setCaretLineVisible(true);
+    editor->setCaretLineBackgroundColor(Qt::lightGray);
+    editor->setAutoIndent(true);
+    editor->SendScintilla(QsciScintilla::SCI_SETCODEPAGE,QsciScintilla::SC_CP_UTF8);
+    //editor->setFont(QFont("Courier New"));
+
     this->ui->editorLayout->addWidget(editor);
 //malicious initialization
     this->ui->editorTabWidget->setTabText(0,QString(tr("Untitled ")).append("1"));
@@ -218,7 +257,7 @@ MainWindow::MainWindow(QWidget *parent) :
     actionDebugStepInto = new QAction(tr("Step Into"),this);
     actionDebugStepInto->setShortcut(tr("F11"));
     actionDebugStepInto->setIcon(QIcon(QString(":/Resources/Icons/Actions/%1/debug-step-into.svg").arg(th)));
-    actionDebugStepInto->setEnabled(false);
+    //actionDebugStepInto->setEnabled(false);
     menuDebug->addAction(actionDebugStepInto);
     actionDebugStepOut = new QAction(tr("Step Out"),this);
     actionDebugStepOut->setShortcut(tr("Shift+F11"));

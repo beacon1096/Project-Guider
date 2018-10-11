@@ -11,7 +11,7 @@ MainInfo::MainInfo(QObject *parent) : QObject(parent)
     plugins.append(BeaconPluginInfo(QString(tr("BeaconPluginInfo")),QString("1.0")));
     plugins.append(BeaconPluginInfo(QString(tr("BeaconFileIO")),QString("1.0")));
 }
-QString MainInfo::componentName=QString("Plasma-CC");
+QString MainInfo::componentName=QString("Beacon-CC");
 QString MainInfo::displayName=QString("GUIDER");
 QString MainInfo::version=QString("0.01");
 QString MainInfo::shortDescription=QString("GAIT Universal IDE Refreshed\nUnder construction");

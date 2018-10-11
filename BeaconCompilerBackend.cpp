@@ -22,11 +22,11 @@ BeaconCompilerBackend::BeaconCompilerBackend(QObject *parent) : QObject(parent)
     connect(&gcc,SIGNAL(programExited(int,QProcess::ExitStatus)),this,SLOT(compileEnded(int,QProcess::ExitStatus)));
     connect(&gpp,SIGNAL(programExited(int,QProcess::ExitStatus)),this,SLOT(compileEnded(int,QProcess::ExitStatus)));
 }
-bool BeaconCompilerBackend::compilerValidation(){
+int BeaconCompilerBackend::compilerValidation(){
     QString cCodeName=QDir::tempPath()+QDir::separator()+QCoreApplication::applicationName()+"_XXXXXX."+"c";
     QString cppCodeName=QDir::tempPath()+QDir::separator()+QCoreApplication::applicationName()+"_XXXXXX."+"cpp";
     QFile c(gcc.programPath),cpp(gpp.programPath);
-    if(!c.exists() || !cpp.exists())return false;
+    if(!c.exists() || !cpp.exists())return -1;
     QTemporaryFile ct(cCodeName);
     if(ct.open()){
         BeaconFileIO::saveFileContent(ct.fileName(),BeaconFileIO::readFileContent(":/Resources/Code/test.c"));
@@ -38,8 +38,8 @@ bool BeaconCompilerBackend::compilerValidation(){
         QString result=gcc.logOut;
         qDebug() << "gcc test result:" << result;
         qDebug() << "RT result:(1)" << lastCompileResult << ",(2)" << lastCompileStatus;
-        if(lastCompileResult!=0)return false;
-        if(!result.isEmpty())return false;
+        if(lastCompileResult!=0)return -2;
+        if(!result.isEmpty())return -2;
     }
     QTemporaryFile cppt(cppCodeName);
     if(cppt.open()){
@@ -52,15 +52,15 @@ bool BeaconCompilerBackend::compilerValidation(){
         QString result=gpp.logOut;
         qDebug() << "g++ test result:" << result;
         qDebug() << "RT result:(1)" << lastCompileResult << ",(2)" << lastCompileStatus;
-        if(lastCompileResult!=0)return false;
-        if(!result.isEmpty())return false;
+        if(lastCompileResult!=0)return -2;
+        if(!result.isEmpty())return -2;
     }
-    return true;
+    return 0;
 }
-bool BeaconCompilerBackend::configureCompilerPath(){
-    BeaconCompilerSetupInterface bcsi;
+bool BeaconCompilerBackend::configureCompilerPath(int lastError){
+    BeaconCompilerSetupInterface bcsi(lastError);
     bcsi.exec();
-    return true;
+    return !compilerValidation();
 }
 void BeaconCompilerBackend::compileEnded(int result,QProcess::ExitStatus status){
     lastCompileResult = result;
@@ -73,6 +73,7 @@ void BeaconCompilerBackend::compileStart(QString filePath,QString executable){
         arg.append(filePath);
         arg.append("-o");
         arg.append(executable);
+        arg.append("-Wall");
         gcc.clearLog();
         gcc.setArguments(arg);
         qDebug() << "executing gcc " << arg;
@@ -88,6 +89,7 @@ void BeaconCompilerBackend::compileStart(QString filePath,QString executable){
         arg.append(filePath);
         arg.append("-o");
         arg.append(executable);
+        arg.append("-Wall");
         gpp.clearLog();
         gpp.setArguments(arg);
         qDebug() << "executing g++ " << arg;
@@ -98,7 +100,11 @@ void BeaconCompilerBackend::compileStart(QString filePath,QString executable){
         latestCompileLog=gpp.logOut;
     }
 }
-BeaconCompilerSetupInterface::BeaconCompilerSetupInterface(QObject *parent) : QDialog(){
+BeaconCompilerSetupInterface::BeaconCompilerSetupInterface(int errorCode,QObject *parent) : QDialog(){
+    information = new QLabel;
+    QSettings settings;
+    if(errorCode==-1)information->setText(QString(tr("Could not find compiler in default Location.").append("\n").append(tr("Please specify where it is."))));
+    if(errorCode==-2)information->setText(QString(tr("Your compiler is unable to compile a simple test program.")).append("\n").append(tr("Please specify a working one.")));
     gccHL = new QHBoxLayout;gppHL = new QHBoxLayout;
     total = new QVBoxLayout;
     gcc = new QLabel("GCC:");
@@ -110,12 +116,12 @@ BeaconCompilerSetupInterface::BeaconCompilerSetupInterface(QObject *parent) : QD
     gccS->setText("...");
     gppS->setText("...");
     confirm = new QPushButton("OK");
-    QSettings settings;
     gccL->setText(settings.value("gccPath").toString());
     gppL->setText(settings.value("gppPath").toString());
     connect(gccS,SIGNAL(clicked()),this,SLOT(gccSClicked()));
     connect(gppS,SIGNAL(clicked()),this,SLOT(gppSClicked()));
     connect(confirm,SIGNAL(clicked()),this,SLOT(confirmClicked()));
+    total->addWidget(information);
     gccHL->addWidget(gcc);gccHL->addWidget(gccL);gccHL->addWidget(gccS);
     gppHL->addWidget(gpp);gppHL->addWidget(gppL);gppHL->addWidget(gppS);
     total->addLayout(gccHL);total->addLayout(gppHL);total->addWidget(confirm);

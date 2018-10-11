@@ -10,6 +10,7 @@
 #include <QMap>
 #include <Qsci/qsciscintilla.h>
 #include <Qsci/qscilexercpp.h>
+#include <Qsci/qsciapis.h>
 #include "BeaconFileIO.h"
 #include "BeaconCodeProperty.h"
 #include "BeaconExternalProgram.h"
@@ -35,6 +36,7 @@ private:
     BeaconCompilerBackend *compiler = nullptr;
     QsciScintilla *editor = nullptr;
     QsciLexerCPP *textLexer = nullptr;
+    QsciAPIs *apis = nullptr;
     BeaconExternalProgram *instance = nullptr;
 //QMenu
     QMenu *menuFile;

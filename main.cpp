@@ -16,11 +16,13 @@ int main(int argc, char *argv[])
 
     splash.showMessage("Testing Compilers");
     BeaconCompilerBackend cbTest;
-    if(cbTest.compilerValidation()){
+    int t=cbTest.compilerValidation();
+    if(t==0){
         qDebug() << "gcc & g++ tested successfully";
     }
     else{
-        cbTest.configureCompilerPath();
+        splash.showMessage("Configuring Compilers");
+        cbTest.configureCompilerPath(t);
     }
     //QThread::msleep(2000);
 
