@@ -2,6 +2,7 @@
 #define BEACONAPPLICATIONINFO_H
 
 #include <QObject>
+#include <QSharedData>
 
 class QVarient;
 class BeaconApplicationInfo;
@@ -20,7 +21,7 @@ public:
     QString task();
     QString emailAddress();
     QString homePage();
-    QString oscUserName();
+    QString oscUsername();
 private:
     class personPrivate;
     personPrivate *p;
@@ -67,6 +68,9 @@ private:
     explicit BeaconAboutLicense(const BeaconApplicationInfo *aboutInfo);
     void setLicenseFromFile(const QString &pathToFile);
     void setLicenseFromText(const QString &pathToText);
+
+    class licensePrivate;
+    QSharedDataPointer<licensePrivate> p;
 };
 
 class BeaconApplicationInfo : public QObject
