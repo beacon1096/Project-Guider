@@ -21,6 +21,9 @@ public:
     QString emailAddress();
     QString homePage();
     QString oscUserName();
+private:
+    class personPrivate;
+    personPrivate *p;
 };
 class BeaconAboutLicense : public QObject{
     Q_OBJECT
