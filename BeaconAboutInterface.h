@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QLabel>
 #include <QTextBrowser>
-#include "BeaconApplicationInfo.h"
+#include "BeaconApplicationInfoOld.h"
 #include "BeaconPlatformInfo.h"
 #include "BeaconFrameworkInfo.h"
 

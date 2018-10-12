@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //Margin Line Number
     editor->setMarginType(0,QsciScintilla::NumberMargin);
     editor->setMarginLineNumbers(0,true);
-    editor->setMarginWidth(0,40);
+    editor->setMarginWidth(0,30);
     //Margin Breakpoint
     editor->setMarginType(1,QsciScintilla::SymbolMargin);
     editor->setMarginWidth(1,10);

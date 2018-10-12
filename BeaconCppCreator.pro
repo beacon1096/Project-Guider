@@ -33,12 +33,13 @@ SOURCES += \
     BeaconCompilerBackend.cpp \
     BeaconExternalProgram.cpp \
     BeaconPlatformInfo.cpp \
-    BeaconApplicationInfo.cpp \
     MainInfo.cpp \
     BeaconAboutInterface.cpp \
     BeaconPluginInfo.cpp \
     BeaconFrameworkInfo.cpp \
     BeaconQsciHelper.cpp \
+    BeaconApplicationInfoOld.cpp \
+    BeaconApplicationInfo.cpp
 
 
 HEADERS += \
@@ -47,13 +48,14 @@ HEADERS += \
     BeaconCompilerBackend.h \
     BeaconExternalProgram.h \
     BeaconPlatformInfo.h \
-    BeaconApplicationInfo.h \
     MainInfo.h \
     BeaconAboutInterface.h \
     BeaconPluginInfo.h \
     BeaconFrameworkInfo.h \
     BeaconQsciHelper.h \
-    BeaconCodeProperty.h
+    BeaconCodeProperty.h \
+    BeaconApplicationInfoOld.h \
+    BeaconApplicationInfo.h
 
 
 FORMS += \
