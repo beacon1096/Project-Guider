@@ -29,7 +29,7 @@ BeaconAboutPerson::~BeaconAboutPerson(){
     delete p;
 }
 BeaconAboutPerson &BeaconAboutPerson::operator=(const BeaconAboutPerson &other){
-    *p=*other.p;
+    p=other.p;
     return *this;
 }
 QString BeaconAboutPerson::name(){
@@ -97,6 +97,10 @@ BeaconAboutLicense::BeaconAboutLicense(const BeaconAboutLicense &other)
     :p(other.p)
 {
 }
+BeaconAboutLicense &BeaconAboutLicense::operator=(const BeaconAboutLicense &other){
+    p=other.p;
+    return *this;
+}
 BeaconAboutLicense::~BeaconAboutLicense()
 {}
 QString BeaconAboutLicense::name(NameFormat formatName){
@@ -115,5 +119,48 @@ QString BeaconAboutLicense::name(NameFormat formatName){
     case BeaconAboutLicense::File:
         licenseShort = licenseFull = QCoreApplication::translate("BeaconAboutLicense","Custom","license item");
         break;
-
+    case BeaconAboutLicense::GPL_V2:
+        licenseShort = QCoreApplication::translate("BeaconAboutLicense","GPL v2", "license item");
+        licenseFull = QCoreApplication::translate("BeaconAboutLicense","GNU General Public License Version 2","license item");
+        break;
+    case BeaconAboutLicense::GPL_V3:
+        licenseShort = QCoreApplication::translate("BeaconAboutLicense","GPL v3","license item");
+        licenseFull = QCoreApplication::translate("BeaconAboutLicense","GNU General Public License Version 3","license item");
+        break;
+    case BeaconAboutLicense::LGPL_V2:
+        licenseShort = QCoreApplication::translate("BeaconAboutLicense","LGPL v2","license item");
+        licenseFull = QCoreApplication::translate("BeaconAboutLicense","GNU Lesser General Public License Version 2","license item");
+        break;
+    case BeaconAboutLicense::LGPL_V2_1:
+        licenseShort = QCoreApplication::translate("BeaconAboutLicense","LGPL v2.1","license item");
+        licenseFull = QCoreApplication::translate("BeaconAboutLicense","GNU Lesser General Public License Version 2.1","license item");
+        break;
+    case BeaconAboutLicense::LGPL_V3:
+        licenseShort = QCoreApplication::translate("BeaconAboutLicense","LGPL v3","license item");
+        licenseFull = QCoreApplication::translate("BeaconAboutLicense","GNU Lesser General Public License Version 3","license item");
+        break;
+    case BeaconAboutLicense::QPL_V1_0:
+        licenseShort = QCoreApplication::translate("BeaconAboutLicense","QPL v1.0","license item");
+        licenseFull = QCoreApplication::translate("BeaconAboutLicense","Q Public License","license item");
+        break;
+    case BeaconAboutLicense::Unknown:
+        licenseShort = QCoreApplication::translate("BeaconAboutLicense","Unknown","license item:short");
+        licenseFull = QCoreApplication::translate("BeaconAboutLicense","Unknown","license item:full");
+        break;
+    default:
+        licenseShort = licenseFull = QCoreApplication::translate("BeaconAboutLicense","Not sprcified","license item");
+        break;
+    }
+    const QString result =
+            (formatName == BeaconAboutLicense::ShortName) ? licenseShort:
+            (formatName == BeaconAboutLicense::FullName) ? licenseFull:
+            QString();
+    return result;
 }
+BeaconAboutLicense::LicenseKey BeaconAboutLicense::key(){
+    return this->p->_licenseKey;
+}
+//@TODO
+//QString text();
+//void setLicenseFromFile(const QString &pathToFile);
+//void setLicenseFromText(const QString &pathToText);
