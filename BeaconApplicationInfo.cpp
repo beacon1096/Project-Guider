@@ -1,5 +1,7 @@
 #include <QCoreApplication>
+#include <QStandardPaths>
 #include "BeaconApplicationInfo.h"
+#include "BeaconFileIO.h"
 
 class BeaconAboutPerson::personPrivate{
 public:
@@ -160,7 +162,83 @@ QString BeaconAboutLicense::name(NameFormat formatName){
 BeaconAboutLicense::LicenseKey BeaconAboutLicense::key(){
     return this->p->_licenseKey;
 }
-//@TODO
-//QString text();
-//void setLicenseFromFile(const QString &pathToFile);
-//void setLicenseFromText(const QString &pathToText);
+void BeaconAboutLicense::setLicenseFromFile(const QString &pathToFile){
+    p->_licenseKey = BeaconAboutLicense::File;
+    p->_pathToLicenseTextFile = pathToFile;
+}
+void BeaconAboutLicense::setLicenseFromText(const QString &text){
+    p->_licenseKey = BeaconAboutLicense::Custom;
+    p->_licenseText = text;
+}
+QString BeaconAboutLicense::text(){
+    QString result;
+
+    const QString lineFeed = QStringLiteral("\n\n");
+    QString pathToFile;
+
+    if(p->_aboutInfo && !p->_aboutInfo->copyRightStatement().isEmpty()) {
+        result = p->_aboutInfo->copyRightStatement() + lineFeed;
+    }
+    bool knownLicense=false;
+    switch (p->_licenseKey) {
+    case BeaconAboutLicense::File:
+        pathToFile = p->_pathToLicenseTextFile;
+        break;
+    case BeaconAboutLicense::BSDL:
+        pathToFile = QStringLiteral("BSD");
+        knownLicense=true;
+        break;
+    case BeaconAboutLicense::GPL_V2:
+        pathToFile = QStringLiteral("GPL_V2");
+        knownLicense=true;
+        break;
+    case BeaconAboutLicense::GPL_V3:
+        pathToFile = QStringLiteral("GPL_V3");
+        knownLicense=true;
+        break;
+    case BeaconAboutLicense::LGPL_V2:
+        pathToFile = QStringLiteral("LGPL_V2");
+        knownLicense=true;
+        break;
+    case BeaconAboutLicense::LGPL_V2_1:
+        pathToFile = QStringLiteral("LGPL_V21");
+        knownLicense=true;
+        break;
+    case BeaconAboutLicense::LGPL_V3:
+        pathToFile = QStringLiteral("LGPL_V3");
+        knownLicense=true;
+        break;
+    case BeaconAboutLicense::QPL_V1_0:
+        pathToFile = QStringLiteral("QPL_V10");
+        knownLicense=true;
+        break;
+    case BeaconAboutLicense::Artistic:
+        pathToFile = QStringLiteral("ARTISTIC");
+        knownLicense=true;
+        break;
+    case BeaconAboutLicense::Custom:
+        if(!p->_licenseText.isEmpty()){
+            result = p->_licenseText;
+            break;
+        }
+    default:
+        result += QCoreApplication::translate("BeaconAboutLicense",
+                                              "No licensing term for this program have been specified."
+                                              "\n"
+                                              "Please check the documentation or the source for any licensing terms."
+                                              "\n"
+                                              );
+    }
+    if(knownLicense){
+        pathToFile = QString::fromLocal8Bit(":/BF/licenses/")+pathToFile;
+        result += QCoreApplication::translate("BeaconAboutLicense",
+                                              "This program is distributed under the terms of the %1.").arg(name(BeaconAboutLicense::ShortName));
+        if(!pathToFile.isEmpty()){
+            result += lineFeed;
+        }
+    }
+    if(!pathToFile.isEmpty()){
+        result += BeaconFileIO::readFileContent(pathToFile);
+    }
+    return result;
+}
