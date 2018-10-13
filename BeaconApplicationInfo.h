@@ -57,7 +57,7 @@ public:
         };
     BeaconAboutLicense(BeaconAboutLicense &other);
     ~BeaconAboutLicense();
-    BeaconAboutLicense &operator=(BeaconAboutLicense &other);
+    BeaconAboutLicense &operator=(const BeaconAboutLicense &other);
     QString text();
     QString name(BeaconAboutLicense::NameFormat formatName);
     BeaconAboutLicense::LicenseKey key();
@@ -119,8 +119,9 @@ public:
     BeaconApplicationInfo &setComponentName(const QString &componentName);
     BeaconApplicationInfo &setDisplayName(const QString &displayName);
     BeaconApplicationInfo &setProgramLogo(const QVariant &image);
+    BeaconApplicationInfo &setProgramIconName(const QString &iconName);
     BeaconApplicationInfo &setOcsProvider(const QString &providerUrl);
-    BeaconApplicationInfo &setVersion(const QString &version);
+    BeaconApplicationInfo &setVersion(const QByteArray &version);
     BeaconApplicationInfo &setShortDescription(const QString &shortDescription);
     BeaconApplicationInfo &setLicense(BeaconAboutLicense::LicenseKey licenseKey);
     BeaconApplicationInfo &setLicense(BeaconAboutLicense::LicenseKey licenseKey,
@@ -130,8 +131,8 @@ public:
                                       BeaconAboutLicense::VersionRestriction versionRestriction);
     BeaconApplicationInfo &setCopyrightStatement(const QString &copyrightStatment);
     BeaconApplicationInfo &setOtherText(const QString &otherText);
-    BeaconApplicationInfo &sethomePage(const QString &homePage);
-    BeaconApplicationInfo &setBugAddress(const QString &bugAddress);
+    BeaconApplicationInfo &setHomePage(const QString &homePage);
+    BeaconApplicationInfo &setBugAddress(const QByteArray &bugAddress);
     BeaconApplicationInfo &setOrganizationDomain(const QByteArray &domain);
     BeaconApplicationInfo &setProductName(const QByteArray &name);
     QString componentName();
@@ -139,9 +140,9 @@ public:
     QString displayName();
     QString organizationName();
     QString programIconName();
-    QVarient programLogo();
+    QVariant programLogo();
     QString ocsProviderUrl();
-    QString version();
+    QString version() const;
     QString shortDescription();
     QString copyrightStatement();
     QString otherText();
@@ -150,6 +151,7 @@ public:
     QList<BeaconAboutPerson> authors();
     QList<BeaconAboutPerson> credits();
     QList<BeaconAboutLicense> licenses();
+    QList<BeaconAboutPerson> translators();
     QString customAuthorHeaderText();
     bool customAuthorHeaderTextEnable();
     BeaconApplicationInfo &setCustomAuthorText(const QString &plainText,
@@ -157,6 +159,14 @@ public:
     BeaconApplicationInfo &unsetCustomAuthorText();
     BeaconApplicationInfo &setLinuxDesktopFileName(const QString &desktopFilePath);
     QString desktopFileName();
+
+    QString aboutTranslationTeam();
+    QString customAuthorPlainText();
+    QString customAuthorRichText();
+    bool customAuthorTextEnabled();
+    void setApplicationData(const BeaconApplicationInfo &aboutData);
+
+    BeaconApplicationInfo &setDesktopFileName(const QString &desktopFileName);
 private:
     class InfoPrivate;
     InfoPrivate *const p;

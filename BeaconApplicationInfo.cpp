@@ -101,7 +101,7 @@ BeaconAboutLicense::BeaconAboutLicense(BeaconAboutLicense &other)
     :p(other.p)
 {
 }
-BeaconAboutLicense &BeaconAboutLicense::operator=(BeaconAboutLicense &other){
+BeaconAboutLicense &BeaconAboutLicense::operator=(const BeaconAboutLicense &other){
     p=other.p;
     return *this;
 }
@@ -416,7 +416,7 @@ BeaconApplicationInfo &BeaconApplicationInfo::addLicenseText(const QString &lice
 BeaconApplicationInfo &BeaconApplicationInfo::setLicenseTextFile(const QString &pathToFile)
 {
     p->_licenseList[0] = BeaconAboutLicense(this);
-    p->_licenseList[0].setLicenseFromPath(pathToFile);
+    p->_licenseList[0].setLicenseFromFile(pathToFile);
     return *this;
 }
 
@@ -424,7 +424,7 @@ BeaconApplicationInfo &BeaconApplicationInfo::addLicenseTextFile(const QString &
 {
     BeaconAboutLicense &firstLicense = p->_licenseList[0];
     BeaconAboutLicense newLicense(this);
-    newLicense.setLicenseFromPath(pathToFile);
+    newLicense.setLicenseFromFile(pathToFile);
     if(p->_licenseList.count() ==1 && firstLicense.p->_licenseKey == BeaconAboutLicense::Unknown){
         firstLicense = newLicense;
     }else{
@@ -466,10 +466,10 @@ BeaconApplicationInfo &BeaconApplicationInfo::setShortDescription(const QString 
 
 BeaconApplicationInfo &BeaconApplicationInfo::setLicense(BeaconAboutLicense::LicenseKey licenseKey)
 {
-    return setLicense(LicenseKey,BeaconAboutLIcense::OnlyThisVersion);
+    return setLicense(licenseKey,BeaconAboutLicense::OnlyThisVersion);
 }
 
-BeaconApplicationInfo &BeaconApplicationInfo::setLicense(BeaconAboutLicense::licenseKey licenseKey,
+BeaconApplicationInfo &BeaconApplicationInfo::setLicense(BeaconAboutLicense::LicenseKey licenseKey,
                                                          BeaconAboutLicense::VersionRestriction versionRestriction)
 {
     p->_licenseList[0] = BeaconAboutLicense(licenseKey,versionRestriction,this);
@@ -478,10 +478,10 @@ BeaconApplicationInfo &BeaconApplicationInfo::setLicense(BeaconAboutLicense::lic
 
 BeaconApplicationInfo &BeaconApplicationInfo::addLicense(BeaconAboutLicense::LicenseKey licenseKey)
 {
-    return addLicense(LicenseKey,BeaconAboutLIcense::OnlyThisVersion);
+    return addLicense(licenseKey,BeaconAboutLicense::OnlyThisVersion);
 }
 
-BeaconApplicationInfo &BeaconApplicationInfo::addLicense(BeaconAboutLicense::licenseKey licenseKey,
+BeaconApplicationInfo &BeaconApplicationInfo::addLicense(BeaconAboutLicense::LicenseKey licenseKey,
                                                          BeaconAboutLicense::VersionRestriction versionRestriction)
 {
     BeaconAboutLicense &firstLicense = p->_licenseList[0];
@@ -505,7 +505,7 @@ BeaconApplicationInfo &BeaconApplicationInfo::setOtherText(const QString &otherT
     return *this;
 }
 
-BeaconApplicationInfo &BeaconApplicationInfo::setHomepage(const QString &homepage)
+BeaconApplicationInfo &BeaconApplicationInfo::setHomePage(const QString &homepage)
 {
     p->_homepageAddress = homepage;
     return *this;
@@ -529,12 +529,12 @@ BeaconApplicationInfo &BeaconApplicationInfo::setProductName(const QByteArray &p
     return *this;
 }
 
-QString BeaconApplicationInfo::componentName() const
+QString BeaconApplicationInfo::componentName()
 {
     return p->_componentName;
 }
 
-QString BeaconApplicationInfo::productName() const
+QString BeaconApplicationInfo::productName()
 {
     if (!p->productName.isEmpty()) {
         return p->productName;
@@ -542,7 +542,7 @@ QString BeaconApplicationInfo::productName() const
     return componentName();
 }
 
-QString BeaconApplicationInfo::displayName() const
+QString BeaconApplicationInfo::displayName()
 {
     if (!p->_displayName.isEmpty()) {
         return p->_displayName;
@@ -550,7 +550,7 @@ QString BeaconApplicationInfo::displayName() const
     return componentName();
 }
 
-QString BeaconApplicationInfo::programIconName() const
+QString BeaconApplicationInfo::programIconName()
 {
     return p->programIconName.isEmpty() ? componentName() : p->programIconName;
 }
@@ -561,7 +561,7 @@ BeaconApplicationInfo &BeaconApplicationInfo::setProgramIconName(const QString &
     return *this;
 }
 
-QVariant BeaconApplicationInfo::programLogo() const
+QVariant BeaconApplicationInfo::programLogo()
 {
     return p->programLogo;
 }
@@ -572,7 +572,7 @@ BeaconApplicationInfo &BeaconApplicationInfo::setProgramLogo(const QVariant &ima
     return *this;
 }
 
-QString BeaconApplicationInfo::ocsProviderUrl() const
+QString BeaconApplicationInfo::ocsProviderUrl()
 {
     return p->_ocsProviderUrl;
 }
@@ -582,42 +582,34 @@ QString BeaconApplicationInfo::version() const
     return QString::fromUtf8(p->_version.data());
 }
 
-QString BeaconApplicationInfo::shortDescription() const
+QString BeaconApplicationInfo::shortDescription()
 {
     return p->_shortDescription;
 }
 
-QString BeaconApplicationInfo::homepage() const
-{
+QString BeaconApplicationInfo::homePage(){
     return p->_homepageAddress;
 }
 
-QString BeaconApplicationInfo::bugAddress() const
+QString BeaconApplicationInfo::bugAddress()
 {
     return QString::fromUtf8(p->_bugAddress.constData());
 }
 
-QString BeaconApplicationInfo::organizationDomain() const
+QString BeaconApplicationInfo::organizationName()
 {
     return p->organizationDomain;
 }
 
-QList<BeaconAboutPerson> BeaconApplicationInfo::authors() const
-{
+QList<BeaconAboutPerson> BeaconApplicationInfo::authors(){
     return p->_authorList;
 }
 
-QList<BeaconAboutPerson> BeaconApplicationInfo::credits() const
+QList<BeaconAboutPerson> BeaconApplicationInfo::credits()
 {
     return p->_creditList;
 }
-
-QList<BeaconAboutPerson> BeaconApplicationInfo::translators() const
-{
-    return p->_translatorList;
-}
-
-QList<BeaconAboutPerson> BeaconApplicationInfo::infoPrivate::parseTranslators(const QString &translatorName, const QString &translatorEmail)
+QList<BeaconAboutPerson> BeaconApplicationInfo::InfoPrivate::parseTranslators(const QString &translatorName, const QString &translatorEmail)
 {
     QList<BeaconAboutPerson> personList;
     if (translatorName.isEmpty() || translatorName == QStringLiteral("Your names")) {
@@ -647,7 +639,7 @@ QList<BeaconAboutPerson> BeaconApplicationInfo::infoPrivate::parseTranslators(co
     return personList;
 }
 
-QList<BeaconAboutPerson> BeaconApplicationInfo::translators() const
+QList<BeaconAboutPerson> BeaconApplicationInfo::translators()
 {
     return p->_translatorList;
 }
@@ -662,32 +654,32 @@ QString BeaconApplicationInfo::aboutTranslationTeam()
            );
 }
 
-QString BeaconApplicationInfo::otherText() const
+QString BeaconApplicationInfo::otherText()
 {
     return p->_otherText;
 }
 
-QList<BeaconAboutLicense> BeaconApplicationInfo::licenses() const
+QList<BeaconAboutLicense> BeaconApplicationInfo::licenses()
 {
     return p->_licenseList;
 }
 
-QString BeaconApplicationInfo::copyrightStatement() const
+QString BeaconApplicationInfo::copyrightStatement()
 {
     return p->_copyrightStatement;
 }
 
-QString BeaconApplicationInfo::customAuthorPlainText() const
+QString BeaconApplicationInfo::customAuthorPlainText()
 {
     return p->customAuthorPlainText;
 }
 
-QString BeaconApplicationInfo::customAuthorRichText() const
+QString BeaconApplicationInfo::customAuthorRichText()
 {
     return p->customAuthorRichText;
 }
 
-bool BeaconApplicationInfo::customAuthorTextEnabled() const
+bool BeaconApplicationInfo::customAuthorTextEnabled()
 {
     return p->customAuthorTextEnabled;
 }
@@ -720,7 +712,7 @@ BeaconApplicationInfo &BeaconApplicationInfo::setDesktopFileName(const QString &
     return *this;
 }
 
-QString BeaconApplicationInfo::desktopFileName() const
+QString BeaconApplicationInfo::desktopFileName()
 {
     return d->desktopFileName;
 }
