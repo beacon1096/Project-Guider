@@ -153,6 +153,9 @@ public:
     BeaconApplicationInfo &unsetCustomAuthorText();
     BeaconApplicationInfo &setLinuxDesktopFileName(const QString &desktopFilePath);
     QString desktopFileName();
+private:
+    class InfoPrivate;
+    InfoPrivate *const p;
 signals:
 
 public slots:
