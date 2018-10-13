@@ -8,12 +8,13 @@ class QVarient;
 class BeaconApplicationInfo;
 class BeaconAboutPerson : public QObject{
     Q_OBJECT
+    friend class BeaconApplicationInfo;
 public:
     explicit BeaconAboutPerson(const QString name,
                                const QString task=QString(),
                                const QString emailAddress=QString(),
                                const QString homePage=QString(),
-                               const QString oscUsername=QString());
+                               const QString ocsUsername=QString());
     BeaconAboutPerson(const BeaconAboutPerson &other);
     ~BeaconAboutPerson();
     BeaconAboutPerson &operator=(const BeaconAboutPerson &other);
@@ -21,13 +22,14 @@ public:
     QString task();
     QString emailAddress();
     QString homePage();
-    QString oscUsername();
+    QString ocsUsername();
 private:
     class personPrivate;
     personPrivate *p;
 };
 class BeaconAboutLicense : public QObject{
     Q_OBJECT
+    friend class BeaconApplicationInfo;
 public:
     enum LicenseKey {
             Custom = -2,
@@ -53,19 +55,19 @@ public:
             OnlyThisVersion,
             OrLaterVersions
         };
-    BeaconAboutLicense(const BeaconAboutLicense &other);
+    BeaconAboutLicense(BeaconAboutLicense &other);
     ~BeaconAboutLicense();
-    BeaconAboutLicense &operator=(const BeaconAboutLicense &other);
+    BeaconAboutLicense &operator=(BeaconAboutLicense &other);
     QString text();
     QString name(BeaconAboutLicense::NameFormat formatName);
     BeaconAboutLicense::LicenseKey key();
 private:
     explicit BeaconAboutLicense(enum BeaconAboutLicense::LicenseKey licenseType,
                                 enum BeaconAboutLicense::VersionRestriction versionRestriction,
-                                const BeaconApplicationInfo *aboutInfo);
+                                BeaconApplicationInfo *aboutInfo);
     explicit BeaconAboutLicense(enum BeaconAboutLicense::LicenseKey lisenceType,
-                                const BeaconApplicationInfo *aboutInfo);
-    explicit BeaconAboutLicense(const BeaconApplicationInfo *aboutInfo);
+                                BeaconApplicationInfo *aboutInfo);
+    explicit BeaconAboutLicense(BeaconApplicationInfo *aboutInfo);
     void setLicenseFromFile(const QString &pathToFile);
     void setLicenseFromText(const QString &pathToText);
 
@@ -108,6 +110,8 @@ public:
                              const QString &emailAddress = QString(),
                              const QString &webAddress = QString(),
                              const QString &ocsUsername = QString());
+    BeaconApplicationInfo &addTranslator(const QString &name,const QString &emailAddress);
+
     BeaconApplicationInfo &setLicenseText(const QString &license);
     BeaconApplicationInfo &addLicenseText(const QString &license);
     BeaconApplicationInfo &setLicenseTextFile(const QString &file);

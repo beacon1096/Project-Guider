@@ -1,5 +1,7 @@
 #include <QCoreApplication>
 #include <QStandardPaths>
+#include <QGlobalStatic>
+#include <QUrl>
 #include "BeaconApplicationInfo.h"
 #include "BeaconFileIO.h"
 
@@ -54,18 +56,18 @@ class BeaconAboutLicense::licensePrivate : public QSharedData{
 public:
     licensePrivate(LicenseKey licenseType,
                    VersionRestriction versionRestriction,
-                   const BeaconApplicationInfo *aboutData);
+                   BeaconApplicationInfo *aboutData);
     licensePrivate(const licensePrivate &other);
 
     LicenseKey _licenseKey;
     QString _licenseText;
     QString _pathToLicenseTextFile;
     VersionRestriction _versionRestriction;
-    const BeaconApplicationInfo *_aboutInfo;
+    BeaconApplicationInfo *_aboutInfo;
 };
 BeaconAboutLicense::licensePrivate::licensePrivate(LicenseKey licenseType,
                                                    VersionRestriction versionRestriction,
-                                                   const BeaconApplicationInfo *aboutInfo)
+                                                   BeaconApplicationInfo *aboutInfo)
     :QSharedData (),
       _licenseKey(licenseType),
       _versionRestriction(versionRestriction),
@@ -82,24 +84,24 @@ BeaconAboutLicense::licensePrivate::licensePrivate(const licensePrivate &other)
 }
 BeaconAboutLicense::BeaconAboutLicense(LicenseKey licenseType,
                                        VersionRestriction versionRestriction,
-                                       const BeaconApplicationInfo *aboutInfo)
+                                       BeaconApplicationInfo *aboutInfo)
     :p(new licensePrivate(licenseType,versionRestriction,aboutInfo))
 {
 }
 BeaconAboutLicense::BeaconAboutLicense(LicenseKey licenseType,
-                                       const BeaconApplicationInfo *aboutInfo)
+                                       BeaconApplicationInfo *aboutInfo)
     :p(new licensePrivate(licenseType,OnlyThisVersion,aboutInfo))
 {
 }
-BeaconAboutLicense::BeaconAboutLicense(const BeaconApplicationInfo *aboutInfo)
+BeaconAboutLicense::BeaconAboutLicense(BeaconApplicationInfo *aboutInfo)
     :p(new licensePrivate(Unknown,OnlyThisVersion,aboutInfo))
 {
 }
-BeaconAboutLicense::BeaconAboutLicense(const BeaconAboutLicense &other)
+BeaconAboutLicense::BeaconAboutLicense(BeaconAboutLicense &other)
     :p(other.p)
 {
 }
-BeaconAboutLicense &BeaconAboutLicense::operator=(const BeaconAboutLicense &other){
+BeaconAboutLicense &BeaconAboutLicense::operator=(BeaconAboutLicense &other){
     p=other.p;
     return *this;
 }
@@ -176,8 +178,8 @@ QString BeaconAboutLicense::text(){
     const QString lineFeed = QStringLiteral("\n\n");
     QString pathToFile;
 
-    if(p->_aboutInfo && !p->_aboutInfo->copyRightStatement().isEmpty()) {
-        result = p->_aboutInfo->copyRightStatement() + lineFeed;
+    if(p->_aboutInfo && !p->_aboutInfo->copyrightStatement().isEmpty()) {
+        result = p->_aboutInfo->copyrightStatement() + lineFeed;
     }
     bool knownLicense=false;
     switch (p->_licenseKey) {
@@ -267,13 +269,17 @@ public:
     QString _ocsProviderUrl;
     QString desktopFileName;
 
-    static QList<KAboutPerson> parseTranslators(const QString &translatorName, const QString &translatorEmail);
-}
+    static QList<BeaconAboutPerson> parseTranslators(const QString &translatorName, const QString &translatorEmail);
+
+    QByteArray _internalProgramName;
+    QByteArray _version;
+    QByteArray _bugAddress;
+};
 BeaconApplicationInfo::BeaconApplicationInfo(const QString &componentName,
                                              const QString &displayName,
                                              const QString &version,
                                              const QString &shortDescription,
-                                             enum KAboutLicense::LicenseKey licenseType,
+                                             enum BeaconAboutLicense::LicenseKey licenseType,
                                              const QString &copyrightStatement,
                                              const QString &text,
                                              const QString &homePageAddress,
@@ -284,17 +290,17 @@ BeaconApplicationInfo::BeaconApplicationInfo(const QString &componentName,
     p->_componentName = componentName;
     int sp = p->_componentName.indexOf(QLatin1Char('/'));
     if(sp >= 0){
-        p->_componentName = p->_componentName.mid(p+1);
+        p->_componentName = p->_componentName.mid(sp+1);
     }
 
     p->_displayName = displayName;
     if(!p->_displayName.isEmpty()){
-        p->_internalProgramName = _displayName.toUtf8();
+        p->_internalProgramName = displayName.toUtf8();
     }
 
     p->_version = version.toUtf8();
     p->_shortDescription = shortDescription;
-    p->_licenseList.append(KAboutLicense(licenseType, this));
+    p->_licenseList.append(BeaconAboutLicense(licenseType, this));
     p->_copyrightStatement = copyrightStatement;
     p->_otherText = text;
     p->_homepageAddress = homePageAddress;
@@ -312,12 +318,12 @@ BeaconApplicationInfo::BeaconApplicationInfo(const QString &componentName,
         hostComponents.removeFirst();
     }
 
-    d->organizationDomain = hostComponents.join(dotChar);
+    p->organizationDomain = hostComponents.join(dotChar);
 
     std::reverse(hostComponents.begin(), hostComponents.end());
     hostComponents.append(componentName);
 
-    d->desktopFileName = hostComponents.join(dotChar);
+    p->desktopFileName = hostComponents.join(dotChar);
 }
 
 BeaconApplicationInfo::BeaconApplicationInfo(const QString &componentName,
@@ -329,18 +335,18 @@ BeaconApplicationInfo::BeaconApplicationInfo(const QString &componentName,
     p->_componentName = componentName;
     int sp = p->_componentName.indexOf(QLatin1Char('/'));
     if(sp >= 0){
-        p->_componentName = p->_componentName.mid(p+1);
+        p->_componentName = p->_componentName.mid(sp+1);
     }
 
     p->_displayName = displayName;
     if(!p->_displayName.isEmpty()){
-        p->_internalProgramName = _displayName.toUtf8();
+        p->_internalProgramName = displayName.toUtf8();
     }
 
     p->_version = version.toUtf8();
 
     p->_licenseList.append(BeaconAboutLicense(BeaconAboutLicense::Unknown, this));
-    p->_bugAddress = "Beacon1096@outlook.com"
+    p->_bugAddress = "Beacon1096@outlook.com";
     p->organizationDomain = QStringLiteral("Beacon1096.io");
     p->desktopFileName = QStringLiteral("io.Beacon1096.%1").arg(p->_componentName);
 }
@@ -351,14 +357,13 @@ BeaconApplicationInfo::~BeaconApplicationInfo(){
 
 BeaconApplicationInfo::BeaconApplicationInfo(const BeaconApplicationInfo &other): p(new InfoPrivate){
     *p = *other.p;
-    QList<KAboutLicense>::iterator it = d->_licenseList.begin();
-    QList<KAboutLicense>::iterator itEnd = d->_licenseList.end();
+    QList<BeaconAboutLicense>::iterator it = p->_licenseList.begin();
+    QList<BeaconAboutLicense>::iterator itEnd = p->_licenseList.end();
     for (; it != itEnd; ++it) {
-        KAboutLicense &al = *it;
+        BeaconAboutLicense &al = *it;
         al.p.detach();
-        al.p->_aboutData = this;
+        al.p->_aboutInfo = this;
     }
-    return *this;
 }
 
 BeaconApplicationInfo &BeaconApplicationInfo::addAuthor(const QString &name,
@@ -382,7 +387,7 @@ BeaconApplicationInfo &BeaconApplicationInfo::addCredit(const QString &name,
 }
 
 BeaconApplicationInfo &BeaconApplicationInfo::addTranslator(const QString &name,
-                                                            const QString &emailAddress,
+                                                            const QString &emailAddress
                                                             )
 {
     p->_translatorList = InfoPrivate::parseTranslators(name,emailAddress);
@@ -397,7 +402,7 @@ BeaconApplicationInfo &BeaconApplicationInfo::setLicenseText(const QString &lice
 
 BeaconApplicationInfo &BeaconApplicationInfo::addLicenseText(const QString &license)
 {
-    BeaconAboutLicense &firstLicense = d->_licenseList[0];
+    BeaconAboutLicense &firstLicense = p->_licenseList[0];
     BeaconAboutLicense newLicense(this);
     newLicense.setLicenseFromText(license);
     if(p->_licenseList.count() ==1 && firstLicense.p->_licenseKey == BeaconAboutLicense::Unknown){
@@ -417,7 +422,7 @@ BeaconApplicationInfo &BeaconApplicationInfo::setLicenseTextFile(const QString &
 
 BeaconApplicationInfo &BeaconApplicationInfo::addLicenseTextFile(const QString &pathToFile)
 {
-    BeaconAboutLicense &firstLicense = d->_licenseList[0];
+    BeaconAboutLicense &firstLicense = p->_licenseList[0];
     BeaconAboutLicense newLicense(this);
     newLicense.setLicenseFromPath(pathToFile);
     if(p->_licenseList.count() ==1 && firstLicense.p->_licenseKey == BeaconAboutLicense::Unknown){
@@ -479,11 +484,316 @@ BeaconApplicationInfo &BeaconApplicationInfo::addLicense(BeaconAboutLicense::Lic
 BeaconApplicationInfo &BeaconApplicationInfo::addLicense(BeaconAboutLicense::licenseKey licenseKey,
                                                          BeaconAboutLicense::VersionRestriction versionRestriction)
 {
-    BeaconAboutLicense &firstLicense = d->_licenseList[0];
-    if (d->_licenseList.count() == 1 && firstLicense.d->_licenseKey == KAboutLicense::Unknown) {
-        firstLicense = KAboutLicense(licenseKey, versionRestriction, this);
+    BeaconAboutLicense &firstLicense = p->_licenseList[0];
+    if (p->_licenseList.count() == 1 && firstLicense.p->_licenseKey == BeaconAboutLicense::Unknown) {
+        firstLicense = BeaconAboutLicense(licenseKey, versionRestriction, this);
     } else {
     p->_licenseList[0] = BeaconAboutLicense(licenseKey,versionRestriction,this);
     }
     return *this;
+}
+
+BeaconApplicationInfo &BeaconApplicationInfo::setCopyrightStatement(const QString &copyrightStatement)
+{
+    p->_copyrightStatement = copyrightStatement;
+    return *this;
+}
+
+BeaconApplicationInfo &BeaconApplicationInfo::setOtherText(const QString &otherText)
+{
+    p->_otherText = otherText;
+    return *this;
+}
+
+BeaconApplicationInfo &BeaconApplicationInfo::setHomepage(const QString &homepage)
+{
+    p->_homepageAddress = homepage;
+    return *this;
+}
+
+BeaconApplicationInfo &BeaconApplicationInfo::setBugAddress(const QByteArray &bugAddress)
+{
+    p->_bugAddress = bugAddress;
+    return *this;
+}
+
+BeaconApplicationInfo &BeaconApplicationInfo::setOrganizationDomain(const QByteArray &domain)
+{
+    p->organizationDomain = QString::fromLatin1(domain.data());
+    return *this;
+}
+
+BeaconApplicationInfo &BeaconApplicationInfo::setProductName(const QByteArray &productName)
+{
+    p->productName = QString::fromUtf8(productName.data());
+    return *this;
+}
+
+QString BeaconApplicationInfo::componentName() const
+{
+    return p->_componentName;
+}
+
+QString BeaconApplicationInfo::productName() const
+{
+    if (!p->productName.isEmpty()) {
+        return p->productName;
+    }
+    return componentName();
+}
+
+QString BeaconApplicationInfo::displayName() const
+{
+    if (!p->_displayName.isEmpty()) {
+        return p->_displayName;
+    }
+    return componentName();
+}
+
+QString BeaconApplicationInfo::programIconName() const
+{
+    return p->programIconName.isEmpty() ? componentName() : p->programIconName;
+}
+
+BeaconApplicationInfo &BeaconApplicationInfo::setProgramIconName(const QString &iconName)
+{
+    p->programIconName = iconName;
+    return *this;
+}
+
+QVariant BeaconApplicationInfo::programLogo() const
+{
+    return p->programLogo;
+}
+
+BeaconApplicationInfo &BeaconApplicationInfo::setProgramLogo(const QVariant &image)
+{
+    p->programLogo = image;
+    return *this;
+}
+
+QString BeaconApplicationInfo::ocsProviderUrl() const
+{
+    return p->_ocsProviderUrl;
+}
+
+QString BeaconApplicationInfo::version() const
+{
+    return QString::fromUtf8(p->_version.data());
+}
+
+QString BeaconApplicationInfo::shortDescription() const
+{
+    return p->_shortDescription;
+}
+
+QString BeaconApplicationInfo::homepage() const
+{
+    return p->_homepageAddress;
+}
+
+QString BeaconApplicationInfo::bugAddress() const
+{
+    return QString::fromUtf8(p->_bugAddress.constData());
+}
+
+QString BeaconApplicationInfo::organizationDomain() const
+{
+    return p->organizationDomain;
+}
+
+QList<BeaconAboutPerson> BeaconApplicationInfo::authors() const
+{
+    return p->_authorList;
+}
+
+QList<BeaconAboutPerson> BeaconApplicationInfo::credits() const
+{
+    return p->_creditList;
+}
+
+QList<BeaconAboutPerson> BeaconApplicationInfo::translators() const
+{
+    return p->_translatorList;
+}
+
+QList<BeaconAboutPerson> BeaconApplicationInfo::infoPrivate::parseTranslators(const QString &translatorName, const QString &translatorEmail)
+{
+    QList<BeaconAboutPerson> personList;
+    if (translatorName.isEmpty() || translatorName == QStringLiteral("Your names")) {
+        return personList;
+    }
+
+    const QStringList nameList(translatorName.split(QLatin1Char(',')));
+
+    QStringList emailList;
+    if (!translatorEmail.isEmpty() && translatorEmail != QStringLiteral("Your emails")) {
+        emailList = translatorEmail.split(QLatin1Char(','), QString::KeepEmptyParts);
+    }
+
+    QStringList::const_iterator nit;
+    QStringList::const_iterator eit = emailList.constBegin();
+
+    for (nit = nameList.constBegin(); nit != nameList.constEnd(); ++nit) {
+        QString email;
+        if (eit != emailList.constEnd()) {
+            email = *eit;
+            ++eit;
+        }
+
+        personList.append(BeaconAboutPerson((*nit).trimmed(), email.trimmed(), true));
+    }
+
+    return personList;
+}
+
+QList<BeaconAboutPerson> BeaconApplicationInfo::translators() const
+{
+    return p->_translatorList;
+}
+
+QString BeaconApplicationInfo::aboutTranslationTeam()
+{
+    return QCoreApplication::translate(
+               "BeaconApplicationInfo",
+               "<p>BF is translated into this languages from source thanks to the work "
+               "of the translation provider.</p>"
+               "replace this with information about your translation team"
+           );
+}
+
+QString BeaconApplicationInfo::otherText() const
+{
+    return p->_otherText;
+}
+
+QList<BeaconAboutLicense> BeaconApplicationInfo::licenses() const
+{
+    return p->_licenseList;
+}
+
+QString BeaconApplicationInfo::copyrightStatement() const
+{
+    return p->_copyrightStatement;
+}
+
+QString BeaconApplicationInfo::customAuthorPlainText() const
+{
+    return p->customAuthorPlainText;
+}
+
+QString BeaconApplicationInfo::customAuthorRichText() const
+{
+    return p->customAuthorRichText;
+}
+
+bool BeaconApplicationInfo::customAuthorTextEnabled() const
+{
+    return p->customAuthorTextEnabled;
+}
+
+BeaconApplicationInfo &BeaconApplicationInfo::setCustomAuthorText(const QString &plainText,
+        const QString &richText)
+{
+    p->customAuthorPlainText = plainText;
+    p->customAuthorRichText = richText;
+
+    p->customAuthorTextEnabled = true;
+
+    return *this;
+}
+
+BeaconApplicationInfo &BeaconApplicationInfo::unsetCustomAuthorText()
+{
+    p->customAuthorPlainText = QString();
+    p->customAuthorRichText = QString();
+
+    p->customAuthorTextEnabled = false;
+
+    return *this;
+}
+
+BeaconApplicationInfo &BeaconApplicationInfo::setDesktopFileName(const QString &desktopFileName)
+{
+    p->desktopFileName = desktopFileName;
+
+    return *this;
+}
+
+QString BeaconApplicationInfo::desktopFileName() const
+{
+    return d->desktopFileName;
+}
+
+class BeaconApplicationInfoRegistry
+{
+public:
+    BeaconApplicationInfoRegistry() : m_appData(nullptr) {}
+    ~BeaconApplicationInfoRegistry()
+    {
+        delete m_appData;
+    }
+    BeaconApplicationInfoRegistry *m_appData;
+};
+
+Q_GLOBAL_STATIC(BeaconApplicationInfoRegistry, s_registry)
+
+BeaconApplicationInfo BeaconApplicationInfo::applicationData()
+{
+    QCoreApplication *app = QCoreApplication::instance();
+
+    BeaconApplicationInfo *aboutData = s_registry->m_appData;
+
+    if (!aboutData) {
+        aboutData = new BeaconApplicationInfo(QCoreApplication::applicationName(),
+                                   QString(),
+                                   QString());
+        if (app) {
+            aboutData->setOrganizationDomain(QCoreApplication::organizationDomain().toUtf8());
+            aboutData->setVersion(QCoreApplication::applicationVersion().toUtf8());
+            aboutData->setDisplayName(app->property("applicationDisplayName").toString());
+            aboutData->setDesktopFileName(app->property("desktopFileName").toString());
+        } else {
+            //qCWarning(BeaconApplicationInfo) << "Could not initialize the properties of BeaconApplicationInfo::applicationData by the equivalent properties from Q*Application: no app instance (yet) existing.";
+        }
+
+        s_registry->m_appData = aboutData;
+    } else {
+        // check if in-sync with Q*Application metadata, as their setters could have been called
+        // after the last BeaconApplicationInfo::setApplicationData, with different values
+        /*warnIfOutOfSync("BeaconApplicationInfo::applicationData().componentName", aboutData->componentName(),
+                        "QCoreApplication::applicationName", QCoreApplication::applicationName());
+        warnIfOutOfSync("BeaconApplicationInfo::applicationData().version", aboutData->version(),
+                        "QCoreApplication::applicationVersion", QCoreApplication::applicationVersion());
+        warnIfOutOfSync("BeaconApplicationInfo::applicationData().organizationDomain", aboutData->organizationDomain(),
+                        "QCoreApplication::organizationDomain", QCoreApplication::organizationDomain());*/
+        if (app) {
+            /*warnIfOutOfSync("BeaconApplicationInfo::applicationData().displayName", aboutData->displayName(),
+                            "QGuiApplication::applicationDisplayName", app->property("applicationDisplayName").toString());
+            warnIfOutOfSync("BeaconApplicationInfo::applicationData().desktopFileName", aboutData->desktopFileName(),
+                            "QGuiApplication::desktopFileName", app->property("desktopFileName").toString());*/
+        }
+    }
+
+    return *aboutData;
+}
+
+void BeaconApplicationInfo::setApplicationData(const BeaconApplicationInfo &aboutData)
+{
+    if (s_registry->m_appData) {
+        *s_registry->m_appData = aboutData;
+    } else {
+        s_registry->m_appData = new BeaconApplicationInfo(aboutData);
+    }
+
+    QCoreApplication *app = QCoreApplication::instance();
+    if (app) {
+        app->setApplicationVersion(aboutData.version());
+        app->setApplicationName(aboutData.componentName());
+        app->setOrganizationDomain(aboutData.organizationDomain());
+        app->setProperty("applicationDisplayName", aboutData.displayName());
+        app->setProperty("desktopFileName", aboutData.desktopFileName());
+    } else {
+        //qCWarning(BeaconApplicationInfo) << "Could not initialize the equivalent properties of Q*Application: no instance (yet) existing.";
+    }
 }
