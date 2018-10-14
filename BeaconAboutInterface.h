@@ -19,7 +19,7 @@ class BeaconAboutInterface : public QMainWindow
 public:
     explicit BeaconAboutInterface(QWidget *parent = nullptr);
     ~BeaconAboutInterface();
-    BeaconApplicationInfo info;
+    BeaconApplicationInfoOld info;
     //About
 
     //Lib

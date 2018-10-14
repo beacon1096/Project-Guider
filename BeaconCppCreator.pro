@@ -39,7 +39,7 @@ SOURCES += \
     BeaconFrameworkInfo.cpp \
     BeaconQsciHelper.cpp \
     BeaconApplicationInfoOld.cpp \
-    BeaconApplicationInfo.cpp
+    #BeaconApplicationInfo.cpp
 
 
 HEADERS += \
@@ -55,7 +55,7 @@ HEADERS += \
     BeaconQsciHelper.h \
     BeaconCodeProperty.h \
     BeaconApplicationInfoOld.h \
-    BeaconApplicationInfo.h
+    #BeaconApplicationInfo.h
 
 
 FORMS += \

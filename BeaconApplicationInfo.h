@@ -55,7 +55,7 @@ public:
             OnlyThisVersion,
             OrLaterVersions
         };
-    BeaconAboutLicense(BeaconAboutLicense &other);
+    BeaconAboutLicense(const BeaconAboutLicense &other);
     ~BeaconAboutLicense();
     BeaconAboutLicense &operator=(const BeaconAboutLicense &other);
     QString text();
@@ -164,7 +164,7 @@ public:
     QString customAuthorPlainText();
     QString customAuthorRichText();
     bool customAuthorTextEnabled();
-    void setApplicationData(const BeaconApplicationInfo &aboutData);
+    void setApplicationData(BeaconApplicationInfo &aboutData);
 
     BeaconApplicationInfo &setDesktopFileName(const QString &desktopFileName);
 private:

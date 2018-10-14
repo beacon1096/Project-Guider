@@ -1,16 +1,16 @@
-#ifndef BEACONAPPLICATIONINFO_H
-#define BEACONAPPLICATIONINFO_H
+#ifndef BEACONAPPLICATIONINFOOLD_H
+#define BEACONAPPLICATIONINFOOLD_H
 
 #include <QObject>
 #include <QDate>
 #include <QTime>
 #include "MainInfo.h"
 
-class BeaconApplicationInfo : public QObject
+class BeaconApplicationInfoOld : public QObject
 {
     Q_OBJECT
 public:
-    explicit BeaconApplicationInfo(QObject *parent = nullptr);
+    explicit BeaconApplicationInfoOld(QObject *parent = nullptr);
         QDate buildDate;
         QTime buildTime;
         QString componentName;

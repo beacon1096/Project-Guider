@@ -97,7 +97,7 @@ BeaconAboutLicense::BeaconAboutLicense(BeaconApplicationInfo *aboutInfo)
     :p(new licensePrivate(Unknown,OnlyThisVersion,aboutInfo))
 {
 }
-BeaconAboutLicense::BeaconAboutLicense(BeaconAboutLicense &other)
+BeaconAboutLicense::BeaconAboutLicense(const BeaconAboutLicense &other)
     :p(other.p)
 {
 }
@@ -366,6 +366,20 @@ BeaconApplicationInfo::BeaconApplicationInfo(const BeaconApplicationInfo &other)
     }
 }
 
+BeaconApplicationInfo &BeaconApplicationInfo::operator=(const BeaconApplicationInfo &other)
+{
+    if(this != &other){
+        *p = *other.p;
+        QList<BeaconAboutLicense>::iterator it = p->_licenseList.begin(),
+                                            itEnd = p->_licenseList.end();
+        for(; it!=itEnd; ++it){
+            BeaconAboutLicense &al = *it;
+            al.p.detach();
+            al.p->_aboutInfo = this;
+        }
+    }
+    return *this;
+}
 BeaconApplicationInfo &BeaconApplicationInfo::addAuthor(const QString &name,
                                                         const QString &task,
                                                         const QString &emailAddress,
@@ -374,6 +388,7 @@ BeaconApplicationInfo &BeaconApplicationInfo::addAuthor(const QString &name,
                                                         )
 {
     p->_authorList.append(BeaconAboutPerson(name,task,emailAddress,homePage,ocsUsername));
+    return *this;
 }
 
 BeaconApplicationInfo &BeaconApplicationInfo::addCredit(const QString &name,
@@ -384,6 +399,7 @@ BeaconApplicationInfo &BeaconApplicationInfo::addCredit(const QString &name,
                                                         )
 {
     p->_creditList.append(BeaconAboutPerson(name,task,emailAddress,homePage,ocsUsername));
+    return *this;
 }
 
 BeaconApplicationInfo &BeaconApplicationInfo::addTranslator(const QString &name,
@@ -391,6 +407,7 @@ BeaconApplicationInfo &BeaconApplicationInfo::addTranslator(const QString &name,
                                                             )
 {
     p->_translatorList = InfoPrivate::parseTranslators(name,emailAddress);
+    return *this;
 }
 
 BeaconApplicationInfo &BeaconApplicationInfo::setLicenseText(const QString &license)
@@ -633,7 +650,7 @@ QList<BeaconAboutPerson> BeaconApplicationInfo::InfoPrivate::parseTranslators(co
             ++eit;
         }
 
-        personList.append(BeaconAboutPerson((*nit).trimmed(), email.trimmed(), true));
+        personList.append(BeaconAboutPerson((*nit).trimmed(), QString(),email.trimmed()));
     }
 
     return personList;
@@ -714,7 +731,7 @@ BeaconApplicationInfo &BeaconApplicationInfo::setDesktopFileName(const QString &
 
 QString BeaconApplicationInfo::desktopFileName()
 {
-    return d->desktopFileName;
+    return p->desktopFileName;
 }
 
 class BeaconApplicationInfoRegistry
@@ -725,7 +742,7 @@ public:
     {
         delete m_appData;
     }
-    BeaconApplicationInfoRegistry *m_appData;
+    BeaconApplicationInfo *m_appData;
 };
 
 Q_GLOBAL_STATIC(BeaconApplicationInfoRegistry, s_registry)
@@ -770,7 +787,7 @@ BeaconApplicationInfo BeaconApplicationInfo::applicationData()
     return *aboutData;
 }
 
-void BeaconApplicationInfo::setApplicationData(const BeaconApplicationInfo &aboutData)
+void BeaconApplicationInfo::setApplicationData(BeaconApplicationInfo &aboutData)
 {
     if (s_registry->m_appData) {
         *s_registry->m_appData = aboutData;
@@ -782,7 +799,7 @@ void BeaconApplicationInfo::setApplicationData(const BeaconApplicationInfo &abou
     if (app) {
         app->setApplicationVersion(aboutData.version());
         app->setApplicationName(aboutData.componentName());
-        app->setOrganizationDomain(aboutData.organizationDomain());
+        app->setOrganizationDomain(aboutData.homePage());
         app->setProperty("applicationDisplayName", aboutData.displayName());
         app->setProperty("desktopFileName", aboutData.desktopFileName());
     } else {

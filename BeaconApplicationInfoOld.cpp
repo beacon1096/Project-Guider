@@ -1,6 +1,6 @@
 #include "BeaconApplicationInfoOld.h"
 
-BeaconApplicationInfo::BeaconApplicationInfo(QObject *parent) : QObject(parent)
+BeaconApplicationInfoOld::BeaconApplicationInfoOld(QObject *parent) : QObject(parent)
 {
     setComponentName(MainInfo::componentName);
     setDisplayName(MainInfo::displayName);
@@ -16,39 +16,39 @@ BeaconApplicationInfo::BeaconApplicationInfo(QObject *parent) : QObject(parent)
     setBuildType(MainInfo::buildType);
 }
 
-void BeaconApplicationInfo::setBugAddress(QString target){
+void BeaconApplicationInfoOld::setBugAddress(QString target){
     bugAddress=target;
 }
-void BeaconApplicationInfo::setComponentName(QString target){
+void BeaconApplicationInfoOld::setComponentName(QString target){
     componentName=target;
 }
-void BeaconApplicationInfo::setCopyrightStatement(QString target){
+void BeaconApplicationInfoOld::setCopyrightStatement(QString target){
     copyrightStatement=target;
 }
-void BeaconApplicationInfo::setHomepage(QString target){
+void BeaconApplicationInfoOld::setHomepage(QString target){
     homepage=target;
 }
-void BeaconApplicationInfo::setOcsProvider(QString target){
+void BeaconApplicationInfoOld::setOcsProvider(QString target){
     ocsProvider=target;
 }
-void BeaconApplicationInfo::setOtherText(QString target){
+void BeaconApplicationInfoOld::setOtherText(QString target){
     otherText=target;
 }
-void BeaconApplicationInfo::setProgramLogo(QString target){
+void BeaconApplicationInfoOld::setProgramLogo(QString target){
     programLogo=target;
 }
-void BeaconApplicationInfo::setShortDescription(QString target){
+void BeaconApplicationInfoOld::setShortDescription(QString target){
     shortDescription=target;
 }
-void BeaconApplicationInfo::setVersion(QString target){
+void BeaconApplicationInfoOld::setVersion(QString target){
     version=target;
 }
-void BeaconApplicationInfo::setDisplayName(QString target){
+void BeaconApplicationInfoOld::setDisplayName(QString target){
     displayName=target;
 }
-void BeaconApplicationInfo::setLicense(QString target){
+void BeaconApplicationInfoOld::setLicense(QString target){
     license=target;
 }
-void BeaconApplicationInfo::setBuildType(QString target){
+void BeaconApplicationInfoOld::setBuildType(QString target){
     buildType=target;
 }
