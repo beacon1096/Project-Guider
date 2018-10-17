@@ -25,7 +25,6 @@ int main(int argc, char *argv[])
         cbTest.configureCompilerPath(t);
     }
     //QThread::msleep(2000);
-
     MainWindow w;
     w.setWindowTitle(MainInfo::displayName);
     splash.finish(&w);

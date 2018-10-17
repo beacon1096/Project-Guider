@@ -9,7 +9,8 @@ QT       += core gui widgets
 TARGET = BeaconCppCreator
 TEMPLATE = app
 
-windows:LIBS += -LA:/Code/Qt/Qt5.11.1/5.11.1/msvc2017_64/lib -lqscintilla2_qt5
+#windows:LIBS += -LA:/Code/Qt/Qt5.11.1/5.11.1/msvc2017_64/lib -lqscintilla2_qt5
+windows:LIBS += -LC:/msys64/mingw64/lib -lqscintilla2_qt5
 linux:LIBS += -L/lib64 -lqscintilla2_qt5
 
 # The following define makes your compiler emit warnings if you use

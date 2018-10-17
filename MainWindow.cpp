@@ -81,7 +81,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //QMenu File-QAction Initialization
     actionFileNew = new QAction(tr("New"),this);
     actionFileNew->setShortcut(tr("Ctrl+N"));
-    actionFileNew->setIcon(QIcon(QString(":/Resources/Icons/Actions/%1/document-new.svg").arg(th)));
+    actionFileNew->setIcon(QIcon(QString(":/Resources/Icons/Actions/breath/document-new.svg")));
     connect(this->actionFileNew,SIGNAL(triggered()),this,SLOT(triggeredNew()));
     menuFile->addAction(actionFileNew);
     actionFileOpen = new QAction(tr("Open"),this);
@@ -495,14 +495,14 @@ void MainWindow::triggeredStopBuild(){
 void MainWindow::triggeredExecute(){
     if(this->fileList[this->ui->editorTabWidget->currentIndex()].executablePath.isEmpty())triggeredBuild();
     QStringList arg;
-    arg.append("/k");
+    arg << "/A" << "/Q" << "/K";
     arg.append(QStringList(this->fileList[this->ui->editorTabWidget->currentIndex()].executablePath));
     instance->setProgram("cmd.exe",arg);
-    instance->startProgram();
     this->actionBuildCompile->setEnabled(false);
     this->actionBuildStopCompile->setEnabled(false);
     this->actionBuildExecute->setEnabled(false);
     this->actionBuildStopExecute->setEnabled(true);
+    instance->startProgram();
     qDebug() << "Instance started";
 }
 void MainWindow::triggeredStopExecute(){
