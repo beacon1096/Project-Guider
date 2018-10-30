@@ -21,28 +21,52 @@ BeaconPlatformInfo::BeaconPlatformInfo(QObject *parent) : QObject(parent)
     #endif
     #ifdef Q_OS_UNIX
         #ifndef Q_OS_LINUX
+        #ifndef Q_OS_MACOS
         QString BeaconPlatformInfo::OS=QString("UNIX");
         bool BeaconPlatformInfo::isLinux=true;
         bool BeaconPlatformInfo::isWindows=false;
         bool BeaconPlatformInfo::isMacos=false;
         QString BeaconPlatformInfo::windowingSystem=QString("xcb");
         #endif
+        #endif
     #endif
     #ifdef Q_WS_X11
     QString BeaconPlatformInfo::windowingSystem="xcb";
     #endif
     #ifdef Q_OS_MACOS
-    QString BeaconPlatformInfo::OS=QString("MACOS");
+    QString BeaconPlatformInfo::OS=QString("macOS");
     bool BeaconPlatformInfo::isMacos=true;
     bool BeaconPlatformInfo::isWindows=false;
     bool BeaconPlatformInfo::isLinux=false;
+    QString BeaconPlatformInfo::windowingSystem=QString("Cocoa");
+    #endif
+    #ifdef Q_OS_OSX
+        #ifndef Q_OS_MACOS
+        QString BeaconPlatformInfo::OS=QString("MACOS");
+        bool BeaconPlatformInfo::isMacos=true;
+        bool BeaconPlatformInfo::isWindows=false;
+        bool BeaconPlatformInfo::isLinux=false;
+        QString BeaconPlatformInfo::windowingSystem=QString("Cocoa");
+        #endif
+    #endif
+    #ifdef Q_OS_DARWIN64
+        #ifndef Q_OS_MACOS
+        QString BeaconPlatformInfo::OS=QString("Darwin64");
+        bool BeaconPlatformInfo::isMacos=true;
+        bool BeaconPlatformInfo::isWindows=false;
+        bool BeaconPlatformInfo::isLinux=false;
+        QString BeaconPlatformInfo::windowingSystem=QString("Cocoa");
+        #endif
     #endif
     #ifdef Q_OS_DARWIN
+        #ifndef Q_OS_DARWIN64
         #ifndef Q_OS_MACOS
         QString BeaconPlatformInfo::OS=QString("DARWIN");
         bool BeaconPlatformInfo::isMacos=true;
         bool BeaconPlatformInfo::isWindows=false;
         bool BeaconPlatformInfo::isLinx=false;
+        QString BeaconPlatformInfo::windowingSystem=QString("Cocoa");
+        #endif
         #endif
     #endif
     #ifdef Q_OS_NETBSD
@@ -102,6 +126,7 @@ BeaconPlatformInfo::BeaconPlatformInfo(QObject *parent) : QObject(parent)
     #endif
     #ifdef Q_OS_CYGWIN
      QString BeaconPlatformInfo::OS=QString("CYGWIN");
+     bool BeaconPlatformInfo::isWindows=true;
     #endif
     #ifdef Q_OS_ANDROID
      QString BeaconPlatformInfo::OS=QString("ANDROID");

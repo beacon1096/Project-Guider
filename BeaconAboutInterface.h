@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QLabel>
 #include <QTextBrowser>
-#include "BeaconApplicationInfo.h"
+#include "BeaconApplicationInfoOld.h"
 #include "BeaconPlatformInfo.h"
 #include "BeaconFrameworkInfo.h"
 
@@ -19,7 +19,7 @@ class BeaconAboutInterface : public QMainWindow
 public:
     explicit BeaconAboutInterface(QWidget *parent = nullptr);
     ~BeaconAboutInterface();
-    BeaconApplicationInfo info;
+    BeaconApplicationInfoOld info;
     //About
 
     //Lib

@@ -12,6 +12,9 @@ BeaconCompilerBackend::BeaconCompilerBackend(QObject *parent) : QObject(parent)
         gpp.setProgram("/usr/bin/g++");
         settings.setValue("gccPath","/usr/bin/gcc");
         settings.setValue("gppPath","/usr/bin/g++");
+        if(BeaconPlatformInfo::isMacos){
+            QMessageBox::warning(NULL, "Clang | GCC", tr("Please be noticed that macOS automatically links Clang to GCC.\nIf you wish to use GCC, please install it yourself and change the settings."), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        }
     }
     else{
         gcc.setProgram("C:/MinGW/bin/gcc.exe");
@@ -21,6 +24,12 @@ BeaconCompilerBackend::BeaconCompilerBackend(QObject *parent) : QObject(parent)
     }
     connect(&gcc,SIGNAL(programExited(int,QProcess::ExitStatus)),this,SLOT(compileEnded(int,QProcess::ExitStatus)));
     connect(&gpp,SIGNAL(programExited(int,QProcess::ExitStatus)),this,SLOT(compileEnded(int,QProcess::ExitStatus)));
+    connect(&gcc,SIGNAL(programLogUpdated(QString)),this,SLOT(_compileInfoUpdated(QString)));
+    connect(&gpp,SIGNAL(programLogUpdated(QString)),this,SLOT(_compileInfoUpdated(QString)));
+}
+void BeaconCompilerBackend::_compileInfoUpdated(QString Content){
+    qDebug() << "[BeaconCompilerBackend]_cIU:" << Content;
+    emit compileInfoUpdated(Content);
 }
 int BeaconCompilerBackend::compilerValidation(){
     QString cCodeName=QDir::tempPath()+QDir::separator()+QCoreApplication::applicationName()+"_XXXXXX."+"c";
@@ -66,7 +75,7 @@ void BeaconCompilerBackend::compileEnded(int result,QProcess::ExitStatus status)
     lastCompileResult = result;
     lastCompileStatus = status;
 }
-void BeaconCompilerBackend::compileStart(QString filePath,QString executable){
+void BeaconCompilerBackend::compileStart(QString filePath,QString executable,QTextBrowser* target){
     QString suffix=filePath.split(".").last();
     if(suffix=="c"){
         QStringList arg;
@@ -93,6 +102,7 @@ void BeaconCompilerBackend::compileStart(QString filePath,QString executable){
         gpp.clearLog();
         gpp.setArguments(arg);
         qDebug() << "executing g++ " << arg;
+        qDebug() << "compile command:[" << gpp.program.program() << " " << arg;
         gpp.startProgram();
         gpp.program.waitForFinished();
         qDebug() << "result:(1)" << lastCompileResult << ",(2)" << lastCompileStatus;

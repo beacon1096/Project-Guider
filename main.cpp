@@ -7,11 +7,12 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    QApplication::addLibraryPath("./plugins");
     a.setOrganizationName(MainInfo::mainDev);
     a.setApplicationName(MainInfo::componentName);
     QSplashScreen splash;
     splash.setPixmap(QPixmap(":/Resources/Pics/Splash/Splash.jpg"));
-    splash.showMessage("Loading");
+    splash.showMessage("Initializing arguments");
     splash.show();
 
     splash.showMessage("Testing Compilers");
@@ -24,8 +25,8 @@ int main(int argc, char *argv[])
         splash.showMessage("Configuring Compilers");
         cbTest.configureCompilerPath(t);
     }
+    splash.showMessage("Constructing Layout");
     //QThread::msleep(2000);
-
     MainWindow w;
     w.setWindowTitle(MainInfo::displayName);
     splash.finish(&w);

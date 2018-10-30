@@ -53,5 +53,21 @@
         <file>Resources/Program/runner.exe</file>
         <file>Resources/Qsci/Apis/c.api</file>
         <file>Resources/Qsci/Apis/cpp.api</file>
+        <file>Resources/Icons/Actions/neon/application-menu.svg</file>
+        <file>Resources/Icons/Actions/neon/document-close.svg</file>
+        <file>Resources/Icons/Actions/neon/document-new.svg</file>
+        <file>Resources/Icons/Actions/neon/document-open.svg</file>
+        <file>Resources/Icons/Actions/neon/document-open-recent.svg</file>
+        <file>Resources/Icons/Actions/neon/document-print.svg</file>
+        <file>Resources/Icons/Actions/neon/document-save.svg</file>
+        <file>Resources/Icons/Actions/neon/document-save-as.svg</file>
+        <file>Resources/Icons/Actions/neon/edit-copy.svg</file>
+        <file>Resources/Icons/Actions/neon/edit-cut.svg</file>
+        <file>Resources/Icons/Actions/neon/edit-delete.svg</file>
+        <file>Resources/Icons/Actions/neon/edit-find.svg</file>
+        <file>Resources/Icons/Actions/neon/edit-find-replace.svg</file>
+        <file>Resources/Icons/Actions/neon/edit-paste.svg</file>
+        <file>Resources/Icons/Actions/neon/edit-redo.svg</file>
+        <file>Resources/Icons/Actions/neon/edit-undo.svg</file>
     </qresource>
 </RCC>

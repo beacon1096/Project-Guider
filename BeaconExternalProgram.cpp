@@ -44,13 +44,13 @@ void BeaconExternalProgram::sendProgramExited(int result,QProcess::ExitStatus st
     emit programExited(result,status);
 }
 void BeaconExternalProgram::programOutputUpdatedTriggered(){
-    QByteArray ba = program.readAllStandardError();
+    QByteArray ba = program.readAllStandardOutput();
     standardOut.append(ba);
     logOut.append(ba);
     standardOutDelta=ba;
     logOutDelta=ba;
-    emit programOutputUpdated();
-    emit programErrorUpdated();
+    emit programOutputUpdated(ba);
+    emit programLogUpdated(ba);
 }
 void BeaconExternalProgram::programErrorUpdatedTriggered(){
     QByteArray ba = program.readAllStandardError();
@@ -58,6 +58,6 @@ void BeaconExternalProgram::programErrorUpdatedTriggered(){
     logOut.append(ba);
     errorOutDelta=ba;
     logOutDelta=ba;
-    emit programErrorUpdated();
-    emit programErrorUpdated();
+    emit programErrorUpdated(ba);
+    emit programLogUpdated(ba);
 }

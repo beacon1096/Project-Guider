@@ -1,72 +1,48 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
+//#include "beaconwindowsaero.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    /*setAttribute(Qt::WA_TranslucentBackground);
+
+    HWND hwnd = (HWND)this->winId();
+    DWORD style = ::GetWindowLong(hwnd, GWL_STYLE);
+    ::SetWindowLong(hwnd, GWL_STYLE, style | WS_MAXIMIZEBOX | WS_THICKFRAME | WS_CAPTION | WS_EX_LAYERED);
+
+    HMODULE hUser = GetModuleHandle(L"user32.dll");
+    if (hUser)
+    {
+        pfnSetWindowCompositionAttribute setWindowCompositionAttribute = (pfnSetWindowCompositionAttribute)GetProcAddress(hUser, "SetWindowCompositionAttribute");
+        if (setWindowCompositionAttribute)
+        {
+            ACCENT_POLICY accent = { ACCENT_ENABLE_BLURBEHIND, 0, 0, 0 };
+            WINDOWCOMPOSITIONATTRIBDATA data;
+            data.Attrib = WCA_ACCENT_POLICY;
+            data.pvData = &accent;
+            data.cbData = sizeof(accent);
+            setWindowCompositionAttribute(hwnd, &data);
+        }
+    }
+    */
     ui->setupUi(this);
     QString th = MainInfo::theme;
     compiler = new BeaconCompilerBackend;
     instance = new BeaconExternalProgram;
     connect(instance,SIGNAL(programExited(int,QProcess::ExitStatus)),this,SLOT(onInstanceExited()));
+    connect(compiler,SIGNAL(compileInfoUpdated(QString)),this,SLOT(onCompileInfoUpdated(QString)));
 //default editor
-    editor = new QsciScintilla(this);
-    currentEditor = editor;
-    //Lexer
-    textLexer = new QsciLexerCPP(this);
-    editor->setLexer(textLexer);
-    //Margin Line Number
-    editor->setMarginType(0,QsciScintilla::NumberMargin);
-    editor->setMarginLineNumbers(0,true);
-    editor->setMarginWidth(0,40);
-    //Margin Breakpoint
-    editor->setMarginType(1,QsciScintilla::SymbolMargin);
-    editor->setMarginWidth(1,10);
-    editor->setMarginSensitivity(1,true);
-    editor->setMarginMarkerMask(1, 0x02);
-    editor->markerDefine(QsciScintilla::Circle, 1);
-    editor->setMarkerBackgroundColor(QColor("#ee1111"), 1);
-    //Margin Step in
-    editor->setMarginType(2, QsciScintilla::SymbolMargin);
-    editor->setMarginLineNumbers(2, false);
-    editor->setMarginWidth(2, 10);
-    editor->setMarginSensitivity(2, false);
-    editor->setMarginMarkerMask(2, 0x04);
-    editor->markerDefine(QsciScintilla::RightArrow, 2);
-    editor->setMarkerBackgroundColor(QColor("#eaf593"), 2);
-    //Margin Folder
-    editor->setMarginType(3, QsciScintilla::SymbolMargin);
-    editor->setMarginLineNumbers(3, false);
-    editor->setMarginWidth(3, 10);
-    editor->setMarginSensitivity(3, true);
-    //Auto Completion-API
-    apis = new QsciAPIs(textLexer);
-    apis->load(":/Resources/Qsci/Apis/cpp.api");
-    apis->prepare();
-    editor->setAutoCompletionSource(QsciScintilla::AcsAll);
-    editor->setAutoCompletionCaseSensitivity(true);
-    editor->setAutoCompletionThreshold(2);
-    //others
-    editor->setUnmatchedBraceForegroundColor(Qt::blue);
-    editor->setIndentationGuides(true);
-    editor->setMarginsBackgroundColor(Qt::lightGray);
-    editor->setCaretLineVisible(true);
-    editor->setCaretLineBackgroundColor(Qt::lightGray);
-    editor->setAutoIndent(true);
-    editor->SendScintilla(QsciScintilla::SCI_SETCODEPAGE,QsciScintilla::SC_CP_UTF8);
-    //editor->setFont(QFont("Courier New"));
-
-    this->ui->editorLayout->addWidget(editor);
+    BeaconEditorTab *editor = new BeaconEditorTab(1);
+    this->ui->editorTabWidget->addTab(editor,editor->title);
+    //this->ui->editorLayout->addWidget(editor);
+    currentTab = editor;
 //malicious initialization
-    this->ui->editorTabWidget->setTabText(0,QString(tr("Untitled ")).append("1"));
-    editorList.insert(QString(tr("Untitled ")).append("1"),editor);
+    this->ui->editorTabWidget->setTabText(0,editor->title);
     newFileCnt=1;
-    fileList.append(BeaconCodeProperty(""));
-    fileList.resize(100);
 //QTextBrowser-Initialization
-    //currentEditor=this->ui->editorTabWidget->findChildren<QTextBrowser*>("defaultBrowser").front();
-    connect(currentEditor,SIGNAL(textChanged()),this,SLOT(codeChanged()));
+    connect(currentTab->editor,SIGNAL(textChanged()),this,SLOT(codeChanged()));
 //QTabWidget Initialization
     connect(this->ui->editorTabWidget,SIGNAL(currentChanged(int)),this,SLOT(tabChanged(int)));
 //QMenu Initialization
@@ -81,7 +57,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //QMenu File-QAction Initialization
     actionFileNew = new QAction(tr("New"),this);
     actionFileNew->setShortcut(tr("Ctrl+N"));
-    actionFileNew->setIcon(QIcon(QString(":/Resources/Icons/Actions/%1/document-new.svg").arg(th)));
+    actionFileNew->setIcon(QIcon(QString(":/Resources/Icons/Actions/breath/document-new.svg")));
     connect(this->actionFileNew,SIGNAL(triggered()),this,SLOT(triggeredNew()));
     menuFile->addAction(actionFileNew);
     actionFileOpen = new QAction(tr("Open"),this);
@@ -344,143 +320,108 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(actionBCPDExternalProgram,SIGNAL(triggered()),this,SLOT(executeExternalProgram()));
     menuTest->addAction(actionBCPDExternalProgram);
 }
-//Statement updates
+//Statement updates//@TODO
 void MainWindow::tabChanged(int target){
     qDebug() << "tabChanged triggered: by" << target;
-    currentEditor=editorList.value(this->ui->editorTabWidget->tabText(target));
-    qDebug() << "with content: [" << currentEditor->text() << "]";
+    currentTab = (BeaconEditorTab *)this->ui->editorTabWidget->widget(target);
+    qDebug() << "with content: [" << currentTab->editor->text() << "]";
 }
-//@TODO
+
 void MainWindow::codeChanged(){
 
 }
 //QActions-File
+void MainWindow::_insertNewEditor(BeaconEditorTab *target){
+    currentTab = target;
+    this->ui->editorTabWidget->addTab(target,target->title);
+    this->ui->editorTabWidget->setCurrentIndex(this->ui->editorTabWidget->count()-1);
+}
 void MainWindow::triggeredNew(){
     newFileCnt++;
-    QWidget *newWidget = new QWidget;
-    QsciScintilla *newEditor = new QsciScintilla;
-    QGridLayout *newLayout = new QGridLayout;
-    currentEditor = newEditor;
-    textLexer = new QsciLexerCPP(this);
-    newEditor->setLexer(textLexer);
-    newEditor->setMarginType(0,QsciScintilla::NumberMargin);
-    newEditor->setMarginLineNumbers(0,true);
-    newEditor->setMarginWidth(0,35);
-    newLayout->addWidget(newEditor);
-    newLayout->setSpacing(0);
-    newLayout->setMargin(0);
-    newWidget->setLayout(newLayout);
-    qDebug() << "Till pnt 2";
-    this->ui->editorTabWidget->addTab(newWidget,QString(tr("Untitled ")).append(QString::number(newFileCnt)));
-    qDebug() << "To " << this->ui->editorTabWidget->count()-1;
-    editorList.insert(QString(tr("Untitled ")).append(QString::number(newFileCnt)),newEditor);
-    this->ui->editorTabWidget->setCurrentIndex(this->ui->editorTabWidget->count()-1);
-    qDebug () << "Till pnt 1";
-    qDebug() << "[ActionDBG]Tab Inserted @ " << this->ui->editorTabWidget->indexOf(newWidget);
+    BeaconEditorTab *newEditor = new BeaconEditorTab(newFileCnt);
+    _insertNewEditor(newEditor);
 }
 void MainWindow::triggeredNew(QString fileName){
     newFileCnt++;
-    QWidget *newWidget = new QWidget;
-    QsciScintilla *newEditor = new QsciScintilla;
-    QGridLayout *newLayout = new QGridLayout;
-    currentEditor = newEditor;
-    textLexer = new QsciLexerCPP(this);
-    newEditor->setLexer(textLexer);
-    newEditor->setMarginType(0,QsciScintilla::NumberMargin);
-    newEditor->setMarginLineNumbers(0,true);
-    newEditor->setMarginWidth(0,35);
-    newLayout->addWidget(newEditor);
-    newLayout->setSpacing(0);
-    newLayout->setMargin(0);
-    newWidget->setLayout(newLayout);
-    qDebug() << "Till pnt 2";
-    this->ui->editorTabWidget->addTab(newWidget,QString(tr("Untitled ")).append(QString::number(newFileCnt)));
-    qDebug() << "To " << this->ui->editorTabWidget->count()-1;
-    editorList.insert(fileName,newEditor);
-    this->ui->editorTabWidget->setCurrentIndex(this->ui->editorTabWidget->count()-1);
-    qDebug () << "Till pnt 1";
-    qDebug() << "[ActionDBG]Tab Inserted @ " << this->ui->editorTabWidget->indexOf(newWidget);
+    BeaconEditorTab *newEditor = new BeaconEditorTab(fileName);
+    _insertNewEditor(newEditor);
 }
 void MainWindow::triggeredOpen(){
     QString target = QFileDialog::getOpenFileName(this, tr("Open File"), ".",tr("C++(*.cpp *.h)"));
     if(target.isEmpty())return;
-    BeaconCodeProperty targetFile(target);
+    BeaconEditorInfo targetFile(target);
     qDebug() << "[ActionDBG]OpenFile:targetFileP=[" << targetFile.filePath << "],N=[" << targetFile.fileName << "]";
-    if(!this->currentEditor->text().isEmpty() && !this->fileList.at(this->ui->editorTabWidget->currentIndex()).filePath.isEmpty()){
+    if(!this->currentTab->editor->text().isEmpty() || !currentTab->info.filePath.isEmpty()){
         qDebug() << "[ActionDBG]Open triggered:newPageCreated";
         this->triggeredNew(targetFile.fileName);
     }
     qDebug() << "[ActionDBG]Open triggered:listPos=" << this->ui->editorTabWidget->currentIndex();
-    fileList[this->ui->editorTabWidget->currentIndex()]=targetFile;
-    qDebug() << QString("[ActionDBG]Open finished,targetFile:path=[%1],name=[%2]").arg(fileList[this->ui->editorTabWidget->currentIndex()].filePath).arg(fileList[this->ui->editorTabWidget->currentIndex()].fileName);
-    this->currentEditor->setText(BeaconFileIO::readFileContent(target));
-    this->ui->editorTabWidget->setTabText(this->ui->editorTabWidget->currentIndex(),targetFile.fileName);
+    currentTab->setupInfo(targetFile);
+    qDebug() << QString("[ActionDBG]Open finished,targetFile:path=[%1],name=[%2]").arg(currentTab->info.filePath).arg(currentTab->info.fileName);
+    this->currentTab->editor->setText(BeaconFileIO::readFileContent(target));
+    this->ui->editorTabWidget->setTabText(this->ui->editorTabWidget->currentIndex(),currentTab->title);
 }
 void MainWindow::triggeredSave(){
-    QString target=this->fileList.at(this->ui->editorTabWidget->currentIndex()).filePath;
-    qDebug() << "[ActionDBG]Save triggered, target filePath:[" << target <<"],fileName:[" << this->fileList.at(this->ui->editorTabWidget->currentIndex()).fileName << ']';
+    QString target=currentTab->info.filePath;
+    qDebug() << "[ActionDBG]Save triggered, target filePath:[" << target <<"],fileName:[" << this->currentTab->info.fileName << ']';
     if(target.isEmpty()){
         target = QFileDialog::getSaveFileName(this, tr("Save.."), ".",tr("C++(*.cpp *.h)"));
         if(target.isEmpty())return;
-        this->fileList[this->ui->editorTabWidget->currentIndex()].setProperty(target);
-        editorList.insert(this->fileList.at(this->ui->editorTabWidget->currentIndex()).fileName,this->editorList.value(this->fileList[this->ui->editorTabWidget->currentIndex()].fileName));
+        currentTab->setupInfo(target);
     }
-    BeaconFileIO::saveFileContent(target,this->currentEditor->text());
-    this->ui->editorTabWidget->setTabText(this->ui->editorTabWidget->currentIndex(),this->fileList.at(this->ui->editorTabWidget->currentIndex()).fileName);
+    BeaconFileIO::saveFileContent(target,this->currentTab->editor->text());
+    this->ui->editorTabWidget->setTabText(this->ui->editorTabWidget->currentIndex(),currentTab->title);
 }
 void MainWindow::triggeredSaveAs(){
     QString target=QFileDialog::getSaveFileName(this, tr("Save.."), ".",tr("C++(*.cpp *.h)"));
-    if(!BeaconFileIO::saveFileContent(target,this->currentEditor->text()))
+    if(!BeaconFileIO::saveFileContent(target,this->currentTab->editor->text()))
         qDebug() << "[ActionDBG]Save failed: Plasma Genereal File Exception";
-    editorList.insert(this->fileList.at(this->ui->editorTabWidget->currentIndex()).fileName,this->editorList.value(this->fileList[this->ui->editorTabWidget->currentIndex()].fileName));
-    this->fileList[this->ui->editorTabWidget->currentIndex()].setProperty(target);
-    this->ui->editorTabWidget->setTabText(this->ui->editorTabWidget->currentIndex(),this->fileList.at(this->ui->editorTabWidget->currentIndex()).fileName);
+    BeaconFileIO::saveFileContent(target,this->currentTab->editor->text());
+    this->ui->editorTabWidget->setTabText(this->ui->editorTabWidget->currentIndex(),currentTab->title);
 }
 void MainWindow::triggeredExit(){
     this->close();
 }
 //QAction-Edit
 void MainWindow::triggeredUndo(){
-    currentEditor->undo();
+    currentTab->editor->undo();
 }
 void MainWindow::triggeredRedo(){
-    currentEditor->redo();
+    currentTab->editor->redo();
 }
 void MainWindow::triggeredSelectAll(){
-    currentEditor->selectAll();
+    currentTab->editor->selectAll();
 }
 void MainWindow::triggeredCopy(){
-    currentEditor->copy();
+    currentTab->editor->copy();
 }
 void MainWindow::triggeredCut(){
-    currentEditor->cut();
+    currentTab->editor->cut();
 }
 void MainWindow::triggeredPaste(){
-    currentEditor->paste();
+    currentTab->editor->paste();
 }
 //QAction-Build
 void MainWindow::triggeredBuild(){
-    int index=this->ui->editorTabWidget->currentIndex();
-    QStringList arg,pathS;
-    arg.append(this->fileList[index].filePath);
-    arg.append("-o");
-    pathS=this->fileList[index].filePath.split(".");
-    pathS.removeLast();
-    if(BeaconPlatformInfo::isWindows)pathS.append("exe");
-    arg.append(pathS.join("."));
     this->actionBuildCompile->setEnabled(false);
     this->actionBuildStopCompile->setEnabled(true);
     this->actionBuildExecute->setEnabled(false);
     this->actionBuildStopExecute->setEnabled(false);
-    this->fileList[index].executablePath=pathS.join(".");
-    qDebug() << "sourcefile: " << this->fileList[index].filePath;
-    qDebug() << "executable: " << pathS.join(".");
-    compiler->compileStart(this->fileList[index].filePath,pathS.join("."));
+    //TODO
+    qDebug() << "sourcefile: " << currentTab->info.filePath;
+    qDebug() << "executable: " << currentTab->info.executablePath;
+    this->ui->buildBrowser->append(tr("---Compile Started---"));
+    compiler->compileStart(currentTab->info.filePath,currentTab->info.executablePath,this->ui->buildBrowser);
     this->actionBuildCompile->setEnabled(true);
     this->actionBuildStopCompile->setEnabled(false);
     this->actionBuildExecute->setEnabled(true);
     this->actionBuildStopExecute->setEnabled(false);
-    this->ui->buildBrowser->append(compiler->latestCompileLog);
+    this->ui->buildBrowser->append(tr("---Compile Finished---"));
+    this->ui->buildBrowser->append("\n");
+}
+void MainWindow::onCompileInfoUpdated(QString content){
+    qDebug() << "[Compiler sent a message here:]" << content;
+    this->ui->buildBrowser->append(content);
 }
 void MainWindow::triggeredStopBuild(){
     if(compiler->gcc.program.state()==QProcess::Running)
@@ -493,16 +434,23 @@ void MainWindow::triggeredStopBuild(){
     this->actionBuildStopExecute->setEnabled(false);
 }
 void MainWindow::triggeredExecute(){
-    if(this->fileList[this->ui->editorTabWidget->currentIndex()].executablePath.isEmpty())triggeredBuild();
+    triggeredBuild();
     QStringList arg;
-    arg.append("/k");
-    arg.append(QStringList(this->fileList[this->ui->editorTabWidget->currentIndex()].executablePath));
-    instance->setProgram("cmd.exe",arg);
-    instance->startProgram();
+    if(BeaconPlatformInfo::isWindows){
+        //arg << "/c" ;//<< "/Q" << "/K";
+        arg.append(QStringList(currentTab->info.executablePath));
+        instance->setProgram(".\\ConEmu\\ConEmu.exe",arg);
+    }
+    else if(BeaconPlatformInfo::isMacos){
+        arg << currentTab->info.executablePath;
+        instance->setProgram("open",arg);
+        qDebug() << "Executed (macOS) [" << currentTab->info.executablePath << "]";
+    }
     this->actionBuildCompile->setEnabled(false);
     this->actionBuildStopCompile->setEnabled(false);
     this->actionBuildExecute->setEnabled(false);
     this->actionBuildStopExecute->setEnabled(true);
+    instance->startProgram();
     qDebug() << "Instance started";
 }
 void MainWindow::triggeredStopExecute(){

@@ -22,9 +22,9 @@ public:
     bool startProgramDetached();
     void clearLog();
 signals:
-    void programOutputUpdated();
-    void programErrorUpdated();
-    void programLogUpdated();
+    void programOutputUpdated(QString content);
+    void programErrorUpdated(QString content);
+    void programLogUpdated(QString content);
     void programExited(int result,QProcess::ExitStatus);
 public slots:
     void sendProgramExited(int result,QProcess::ExitStatus status);
