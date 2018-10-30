@@ -12,10 +12,11 @@
 #include <Qsci/qscilexercpp.h>
 #include <Qsci/qsciapis.h>
 #include "BeaconFileIO.h"
-#include "BeaconCodeProperty.h"
+#include "BeaconEditorInfo.h"
 #include "BeaconExternalProgram.h"
 #include "BeaconCompilerBackend.h"
 #include "BeaconAboutInterface.h"
+#include "BeaconEditorTab.h"
 
 namespace Ui {
 class MainWindow;
@@ -38,6 +39,7 @@ private:
     QsciLexerCPP *textLexer = nullptr;
     QsciAPIs *apis = nullptr;
     BeaconExternalProgram *instance = nullptr;
+    BeaconEditorTab *currentTab = nullptr;
 //QMenu
     QMenu *menuFile;
     QMenu *menuEdit;
@@ -98,11 +100,8 @@ private:
     QAction *actionHelpAboutQt;
 //QActions-ProgramDebug
     QAction *actionBCPDExternalProgram;
-//QTextBrowser
-    QsciScintilla *currentEditor;
 //QList-Opened Files && editorList
-    QVector<BeaconCodeProperty> fileList;
-    QMap<QString,QsciScintilla*> editorList;
+    QMap<int,BeaconEditorInfo*> editorList;
 //About Interface
     BeaconAboutInterface *abI;
 public slots:
@@ -136,7 +135,10 @@ public slots:
     void executeExternalProgram();
 //Alternate Helpers
     void onInstanceExited();
-
+    void onCompileInfoUpdated(QString content);
+private:
+//QActions-File
+    void _insertNewEditor(BeaconEditorTab *target);
 private slots:
 };
 

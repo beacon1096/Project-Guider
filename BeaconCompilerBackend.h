@@ -15,6 +15,8 @@
 #include <QLineEdit>
 #include <QHBoxLayout>
 #include <QToolButton>
+#include <QTextBrowser>
+#include <QMessageBox>
 #include "BeaconPlatformInfo.h"
 #include "BeaconFileIO.h"
 #include "BeaconExternalProgram.h"
@@ -32,10 +34,11 @@ public:
     int lastCompileResult;
     QString latestCompileLog;
 signals:
-
+    void compileInfoUpdated(QString content);
 public slots:
+    void _compileInfoUpdated(QString content);
     void compileEnded(int result,QProcess::ExitStatus status);
-    void compileStart(QString filePath, QString executable);
+    void compileStart(QString filePath, QString executable, QTextBrowser *target);
 };
 class BeaconCompilerSetupInterface : public QDialog{
     Q_OBJECT

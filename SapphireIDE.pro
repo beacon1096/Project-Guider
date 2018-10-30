@@ -3,15 +3,16 @@
 # Project created by QtCreator 2018-10-05T21:02:29
 #
 #-------------------------------------------------
+# MainWindow 414
+QT       += core gui widgets svg
 
-QT       += core gui widgets
-
-TARGET = BeaconCppCreator
+TARGET = SapphireIDE
 TEMPLATE = app
 
-#windows:LIBS += -LA:/Code/Qt/Qt5.11.1/5.11.1/msvc2017_64/lib -lqscintilla2_qt5
+#windows:LIBS += -LC:/Qt/Qt5.11.1/5.11.1/msvc2017_64/lib -lqscintilla2_qt5
 windows:LIBS += -LC:/msys64/mingw64/lib -lqscintilla2_qt5
 linux:LIBS += -L/lib64 -lqscintilla2_qt5
+macx:LIBS += -L/usr/local/Cellar/qt/5.11.2/lib -lqscintilla2_qt5
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -30,7 +31,6 @@ SOURCES += \
         main.cpp \
         MainWindow.cpp \
     BeaconFileIO.cpp \
-    BeaconCodeProperty.cpp \
     BeaconCompilerBackend.cpp \
     BeaconExternalProgram.cpp \
     BeaconPlatformInfo.cpp \
@@ -41,6 +41,8 @@ SOURCES += \
     BeaconQsciHelper.cpp \
     BeaconApplicationInfoOld.cpp \
     #BeaconApplicationInfo.cpp
+    BeaconEditorInfo.cpp \
+    BeaconEditorTab.cpp
 
 
 HEADERS += \
@@ -54,8 +56,10 @@ HEADERS += \
     BeaconPluginInfo.h \
     BeaconFrameworkInfo.h \
     BeaconQsciHelper.h \
-    BeaconCodeProperty.h \
     BeaconApplicationInfoOld.h \
+    BeaconWindowsAero.h \
+    BeaconEditorInfo.h \
+    BeaconEditorTab.h
     #BeaconApplicationInfo.h
 
 
@@ -75,3 +79,6 @@ RESOURCES += \
 
 # DISTFILES += \
 #    KDEFrameworks.pri
+
+macx:INCLUDEPATH += /usr/local/Cellar/qt/5.11.2/include
+macx:DEPENDPATH += /usr/local/Cellar/qt/5.11.2/include
