@@ -14,6 +14,7 @@ public:
     static void bundleIO(QFile& file,QTextStream& str);
     static QString readFileContent(QString fileName);
     static bool saveFileContent(QString fileName,QString content);
+    static bool fileExist(QString fileName);
 
 signals:
 

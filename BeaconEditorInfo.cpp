@@ -39,7 +39,7 @@ void BeaconEditorInfo::setProperty(BeaconEditorInfo &source){
 }
 void BeaconEditorInfo::setProperty(QString &source){
     this->filePath=source;
-
+    _genFileName();
     _genSuffix();
     _genExecutablePath();
     changed=false;

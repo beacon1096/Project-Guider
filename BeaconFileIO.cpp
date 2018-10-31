@@ -35,3 +35,7 @@ bool BeaconFileIO::saveFileContent(QString fileName,QString content){
     outputStram<<content;
     return true;
 }
+bool BeaconFileIO::fileExist(QString fileName){
+    QFile file(fileName);
+    return file.exists();
+}

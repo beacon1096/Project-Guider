@@ -17,6 +17,7 @@
 #include "BeaconCompilerBackend.h"
 #include "BeaconAboutInterface.h"
 #include "BeaconEditorTab.h"
+#include "BeaconCommandlineProgram.h"
 
 namespace Ui {
 class MainWindow;
@@ -38,7 +39,7 @@ private:
     QsciScintilla *editor = nullptr;
     QsciLexerCPP *textLexer = nullptr;
     QsciAPIs *apis = nullptr;
-    BeaconExternalProgram *instance = nullptr;
+    BeaconCommandlineProgram *instance = nullptr;
     BeaconEditorTab *currentTab = nullptr;
 //QMenu
     QMenu *menuFile;

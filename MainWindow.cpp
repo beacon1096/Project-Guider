@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     QString th = MainInfo::theme;
     compiler = new BeaconCompilerBackend;
-    instance = new BeaconExternalProgram;
+    instance = new BeaconCommandlineProgram;
     connect(instance,SIGNAL(programExited(int,QProcess::ExitStatus)),this,SLOT(onInstanceExited()));
     connect(compiler,SIGNAL(compileInfoUpdated(QString)),this,SLOT(onCompileInfoUpdated(QString)));
 //default editor
@@ -367,8 +367,9 @@ void MainWindow::triggeredSave(){
     if(target.isEmpty()){
         target = QFileDialog::getSaveFileName(this, tr("Save.."), ".",tr("C++(*.cpp *.h)"));
         if(target.isEmpty())return;
-        currentTab->setupInfo(target);
     }
+    currentTab->setupInfo(target);
+    this->ui->editorTabWidget->setTabText(this->ui->editorTabWidget->currentIndex(),currentTab->title);
     BeaconFileIO::saveFileContent(target,this->currentTab->editor->text());
     this->ui->editorTabWidget->setTabText(this->ui->editorTabWidget->currentIndex(),currentTab->title);
 }
@@ -435,23 +436,14 @@ void MainWindow::triggeredStopBuild(){
 }
 void MainWindow::triggeredExecute(){
     triggeredBuild();
-    QStringList arg;
-    if(BeaconPlatformInfo::isWindows){
-        //arg << "/c" ;//<< "/Q" << "/K";
-        arg.append(QStringList(currentTab->info.executablePath));
-        instance->setProgram(".\\ConEmu\\ConEmu.exe",arg);
-    }
-    else if(BeaconPlatformInfo::isMacos){
-        arg << currentTab->info.executablePath;
-        instance->setProgram("open",arg);
-        qDebug() << "Executed (macOS) [" << currentTab->info.executablePath << "]";
-    }
+    instance->setArguments(QStringList(currentTab->info.executablePath));
     this->actionBuildCompile->setEnabled(false);
     this->actionBuildStopCompile->setEnabled(false);
     this->actionBuildExecute->setEnabled(false);
     this->actionBuildStopExecute->setEnabled(true);
     instance->startProgram();
     qDebug() << "Instance started";
+    qDebug() << "with:[" << instance->program.program() << instance->program.arguments().join(" ") << "]";
 }
 void MainWindow::triggeredStopExecute(){
     if(instance->program.state() == QProcess::Running)

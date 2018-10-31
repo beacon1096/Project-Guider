@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QFile>
 #include <QProcess>
+#include <QDebug>
 
 class BeaconExternalProgram : public QObject
 {

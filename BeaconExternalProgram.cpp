@@ -49,6 +49,7 @@ void BeaconExternalProgram::programOutputUpdatedTriggered(){
     logOut.append(ba);
     standardOutDelta=ba;
     logOutDelta=ba;
+    qDebug() << "[BEP]update:" << QString(ba);
     emit programOutputUpdated(ba);
     emit programLogUpdated(ba);
 }

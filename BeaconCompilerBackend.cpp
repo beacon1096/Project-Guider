@@ -91,7 +91,6 @@ void BeaconCompilerBackend::compileStart(QString filePath,QString executable,QTe
         qDebug() << "result:(1)" << lastCompileResult << ",(2)" << lastCompileStatus;
         qDebug() << "logs:" << gcc.logOut;
         latestCompileLog=gcc.logOut;
-
     }
     else if(suffix=="cpp"){
         QStringList arg;
@@ -140,17 +139,17 @@ BeaconCompilerSetupInterface::BeaconCompilerSetupInterface(int errorCode,QObject
 void BeaconCompilerSetupInterface::gppSClicked(){
     QString path;
     if(BeaconPlatformInfo::isWindows)
-        path = QFileDialog::getOpenFileName(this,tr("Select G++ Path"),".","g++.exe");
+        path = QFileDialog::getOpenFileName(this,tr("Select G++ Path"),"C:/","g++.exe");
     else
-        path = QFileDialog::getOpenFileName(this,tr("Select G++ Path"),".","g++");
+        path = QFileDialog::getOpenFileName(this,tr("Select G++ Path"),"/","");
     gppL->setText(path);
 }
 void BeaconCompilerSetupInterface::gccSClicked(){
     QString path;
     if(BeaconPlatformInfo::isWindows)
-        path = QFileDialog::getOpenFileName(this,tr("Select GCC Path"),".","gcc.exe");
+        path = QFileDialog::getOpenFileName(this,tr("Select GCC Path"),"C:/","gcc.exe");
     else
-        path = QFileDialog::getOpenFileName(this,tr("Select GCC Path"),".","gcc");
+        path = QFileDialog::getOpenFileName(this,tr("Select GCC Path"),"/","");
     gccL->setText(path);
     QString gppPath=path;
     gppPath.replace(gppPath.lastIndexOf("gcc"),3,"g++");

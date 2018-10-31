@@ -42,7 +42,8 @@ SOURCES += \
     BeaconApplicationInfoOld.cpp \
     #BeaconApplicationInfo.cpp
     BeaconEditorInfo.cpp \
-    BeaconEditorTab.cpp
+    BeaconEditorTab.cpp \
+    BeaconCommandlineProgram.cpp
 
 
 HEADERS += \
@@ -59,7 +60,8 @@ HEADERS += \
     BeaconApplicationInfoOld.h \
     BeaconWindowsAero.h \
     BeaconEditorInfo.h \
-    BeaconEditorTab.h
+    BeaconEditorTab.h \
+    BeaconCommandlineProgram.h
     #BeaconApplicationInfo.h
 
 
