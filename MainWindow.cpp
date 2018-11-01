@@ -474,14 +474,21 @@ void MainWindow::onInstanceExited(){
 //QActions-Test
 void MainWindow::executeExternalProgram(){
     //QString target=QFileDialog::getOpenFileName(this, tr("Execute.."), ".",tr("Executable(*.*)"));
-    QSettings settings;
-    QString target=settings.value("gppPath").toString();
-    BeaconExternalProgram app;
-    QStringList arg;arg.append("-v");
-    app.setProgram(target,arg);
-    app.startProgram();
-    app.program.waitForFinished();
-    QMessageBox::information(nullptr, "Finished", app.logOut, QMessageBox::Yes, QMessageBox::Yes);
+    //QSettings settings;
+    //QString target=settings.value("gppPath").toString();
+    //BeaconExternalProgram app;
+    //QStringList arg;arg.append("-v");
+    //app.setProgram(target,arg);
+    //app.startProgram();
+    //app.program.waitForFinished();
+    //QMessageBox::information(nullptr, "Finished", app.logOut, QMessageBox::Yes, QMessageBox::Yes);
+    int t=compiler->compilerValidation();
+    if(t==0){
+        QMessageBox::information(nullptr, "Finished", "Validation passed", QMessageBox::Yes, QMessageBox::Yes);
+    }
+    else{
+        QMessageBox::information(nullptr, "Finished", QString("Validation Failed with error %1").arg(QString::number(t)), QMessageBox::Yes, QMessageBox::Yes);
+    }
 }
 MainWindow::~MainWindow(){
     delete ui;

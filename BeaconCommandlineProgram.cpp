@@ -16,6 +16,7 @@ BeaconCommandlineProgram::BeaconCommandlineProgram(QString platform)
     }
     else if(platform=="linux"){
         //yakuake&guake not supported
+        //liri not supported
         if(QFile::exists("/usr/bin/konsole")){
             bashBased=true;
             setProgram("konsole");
@@ -27,6 +28,18 @@ BeaconCommandlineProgram::BeaconCommandlineProgram(QString platform)
             manualHalt=true;
             prefixArgument << "--" << "bash" << "-c";
             setProgram("gnome-terminal");
+        }
+        else if(QFile::exists("/usr/bin/mate-terminal")){
+            bashBased=true;
+            manualHalt=true;
+            prefixArgument << "--" << "bash" << "-c";
+            setProgram("mate-terminal");
+        }
+        else if(QFile::exists("/usr/bin/deepin-terminal")){
+            bashBased=true;
+            manualHalt=true;
+            prefixArgument << "-e" << "bash" << "-c";
+            setProgram("deepin-terminal");
         }
         else if(QFile::exists("/usr/bin/xfce4-terminal")){
             bashBased=true;
