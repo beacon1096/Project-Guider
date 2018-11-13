@@ -2,6 +2,8 @@
 #define BEACONCOMMANDLINEPROGRAM_H
 
 #include <QObject>
+#include <QDebug>
+#include <QDir>
 #include "BeaconExternalProgram.h"
 #include "BeaconPlatformInfo.h"
 

@@ -8,8 +8,14 @@ BeaconCommandlineProgram::BeaconCommandlineProgram(QString platform)
         else if(BeaconPlatformInfo::isLinux)platform=QString("linux");
     }
     if(platform=="windows"){
+        qDebug() << "Current Directory:" << QDir::
+        if(QFile::exists("./ConEmu/ConEmu64.exe")){
+            bashBased=true;
+            setProgram("./ConEmu/ConEmu64.exe");
+            prefixArgument << "-run";
+        }
         setProgram("cmd");
-        prefixArgument << "/c";
+        prefixArgument << "/k";
     }
     else if(platform=="macos"){
         setProgram("open");
@@ -83,6 +89,6 @@ void BeaconCommandlineProgram::setArguments(QStringList arg){
         arguments.append(mid);
     }
     else arguments.append(arg);
-    arguments.append(suffixArgument);
+    //arguments.append(suffixArgument);
     this->program.setArguments(arguments);
 }
