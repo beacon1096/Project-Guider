@@ -39,24 +39,29 @@ void BeaconEditorInfo::setProperty(BeaconEditorInfo &source){
 }
 void BeaconEditorInfo::setProperty(QString &source){
     this->filePath=source;
+    qDebug() << "FilePath -> " << source;
     _genFileName();
     _genSuffix();
     _genExecutablePath();
     changed=false;
 }
 void BeaconEditorInfo::_genFileName(){
-    fileName=filePath.split('/').last();;
+    fileName=filePath.split('/').last();
+    qDebug() << "FileName -> " << fileName;
 }
 void BeaconEditorInfo::_genSuffix(){
     suffix=filePath.split('.').last();
+    qDebug() << "suffix -> "<< suffix;
 }
 void BeaconEditorInfo::_genExecutablePath(){
-    if(BeaconPlatformInfo::isWindows){
-        executablePath=filePath.replace(suffix,"exe");
-    }
-    else{
-        QStringList t=filePath.split('.');
-        t.removeLast();
-        executablePath = t.join('.');
-    }
+    QStringList t=filePath.split('.');
+    t.removeLast();
+    if(BeaconPlatformInfo::isWindows)t.append("exe");
+    executablePath = t.join('.');
+    qDebug() << "executable -> " << executablePath;
+}
+void BeaconEditorInfo::updateInfo(){
+    _genFileName();
+    _genSuffix();
+    _genExecutablePath();
 }

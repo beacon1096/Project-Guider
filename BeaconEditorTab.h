@@ -7,15 +7,17 @@
 #include <Qsci/qscilexercpp.h>
 #include <Qsci/qsciapis.h>
 #include "BeaconEditorInfo.h"
+#include "BeaconCodeEditor.h"
 
 class BeaconEditorTab : public QWidget
 {
     Q_OBJECT
 public:
     BeaconEditorInfo info;
-    QsciScintilla *editor = nullptr;
-    QsciLexerCPP *textLexer = nullptr;
-    QsciAPIs *apis = nullptr;
+    //QsciScintilla *editor = nullptr;
+    //QsciLexerCPP *textLexer = nullptr;
+    //QsciAPIs *apis = nullptr;
+    BeaconCodeEditor *editor = nullptr;
     QGridLayout *layout = nullptr;
     QString title;
     explicit BeaconEditorTab(int cnt=0,QWidget *parent = nullptr);

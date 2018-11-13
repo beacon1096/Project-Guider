@@ -8,7 +8,7 @@ BeaconCommandlineProgram::BeaconCommandlineProgram(QString platform)
         else if(BeaconPlatformInfo::isLinux)platform=QString("linux");
     }
     if(platform=="windows"){
-        qDebug() << "Current Directory:" << QDir::
+        qDebug() << "Current Directory:" ;
         if(QFile::exists("./ConEmu/ConEmu64.exe")){
             bashBased=true;
             setProgram("./ConEmu/ConEmu64.exe");

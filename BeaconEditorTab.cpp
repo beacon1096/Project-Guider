@@ -11,8 +11,13 @@ BeaconEditorTab::BeaconEditorTab(int cnt, QWidget *parent) : QWidget(parent)
     title=QString(tr("Untitled")).append(" ").append(QString::number(cnt));
 }
 void BeaconEditorTab::_setup(){
+    this->info.filePath="";
+    this->info.fileName="";
     layout = new QGridLayout(this);
-    editor = new QsciScintilla(this);
+    editor = new BeaconCodeEditor;
+    layout->setMargin(0);
+    //editor = new QsciScintilla(this);
+    /*
     //Lexer
     textLexer = new QsciLexerCPP(this);
     editor->setLexer(textLexer);
@@ -55,6 +60,7 @@ void BeaconEditorTab::_setup(){
     editor->setCaretLineBackgroundColor(Qt::lightGray);
     editor->setAutoIndent(true);
     editor->SendScintilla(QsciScintilla::SCI_SETCODEPAGE,QsciScintilla::SC_CP_UTF8);
+    */
 
     layout->addWidget(editor);
     this->setLayout(layout);

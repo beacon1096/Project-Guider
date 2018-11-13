@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <Qsci/qsciscintilla.h>
+#include <QDebug>
 #include "BeaconPlatformInfo.h"
 
 class BeaconEditorInfo : public QObject
@@ -15,7 +16,8 @@ public:
     QString fileName,filePath;
     QString executablePath;
     QString suffix;
-    QsciScintilla *editor;
+    //QsciScintilla *editor;
+    void updateInfo();
     bool changed;
     bool updateChangedStatus(bool state);
     void operator=(const BeaconEditorInfo &source);

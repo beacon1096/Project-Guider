@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->ui->editorTabWidget->setTabText(0,editor->title);
     newFileCnt=1;
 //QTextBrowser-Initialization
-    connect(currentTab->editor,SIGNAL(textChanged()),this,SLOT(codeChanged()));
+    //connect(currentTab->editor,SIGNAL(textChanged()),this,SLOT(codeChanged()));
 //QTabWidget Initialization
     connect(this->ui->editorTabWidget,SIGNAL(currentChanged(int)),this,SLOT(tabChanged(int)));
 //QMenu Initialization
@@ -323,7 +323,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //Statement updates//@TODO
 void MainWindow::tabChanged(int target){
     qDebug() << "tabChanged triggered: by" << target;
-    currentTab = (BeaconEditorTab *)this->ui->editorTabWidget->widget(target);
+    currentTab = qobject_cast<BeaconEditorTab*>(this->ui->editorTabWidget->widget(target));
     qDebug() << "with content: [" << currentTab->editor->text() << "]";
 }
 
@@ -369,7 +369,6 @@ void MainWindow::triggeredSave(){
         if(target.isEmpty())return;
     }
     currentTab->setupInfo(target);
-    this->ui->editorTabWidget->setTabText(this->ui->editorTabWidget->currentIndex(),currentTab->title);
     BeaconFileIO::saveFileContent(target,this->currentTab->editor->text());
     this->ui->editorTabWidget->setTabText(this->ui->editorTabWidget->currentIndex(),currentTab->title);
 }
